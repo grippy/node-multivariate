@@ -120,15 +120,41 @@ In the corresponding controller (let's say you're using nodejs):
 	      response.setEncoding('utf8');
 	      response.on('data', function (chunk) {
 	        var test = JSON.parse(chunk.toString())
-	        if (test.variant == 'a'){
-	            res.write('show variant a of this page here...')
-	        } else if (test.variant == 'b'){
-	            res.write('show variant b of this page here...')
-	        }
+			if (test.variant == 'a'){
+				res.write(page_a_template({'test':test}))
+			} else {
+				res.write(page_b_template({'test':test}))
+			}
 	        res.end();
 	      });
 	    });
 	}
 
+Example of what page A looks like:
 
+	<html>
+		<head>
+			<title>Page A</title>
+			<script type="text/javascript" src="http://localhost:8000/api/1.0/client.js"></script>
+			<script type="text/javascript">
+			multivar.base_url = 'http://localhost:8000';
+			multivar.site = 'domain.com';
+			multivar.page(<%=JSON.stringify(test)%>)
+			</script>
+		</head>
+		<body>
+			<h1>Page Animal!</h1>
+			<a href="#track" onclick="multivar.track('<%=test.name%>', 'nice_fucker')">Nice!</a> | 
+			<a href="#track" onclick="multivar.track('<%=test.name%>', 'hell_yeah')">Hell Yeah!</a>
+			<br />
+			<img src="http://i398.photobucket.com/albums/pp62/michelequintana/muppets-animal.jpg" />
+			<br />
+			<%=JSON.stringify(test)%>
+		</body>
+	</html>
+
+# Hosting this application
+
+In the above examples, we're serving the node-multivariate app on localhost:8000. 
+Since this doesn't work in production you'll probably want to host this through a sub-domain.
 
