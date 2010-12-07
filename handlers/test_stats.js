@@ -15,6 +15,7 @@ function test_stats(req, res, params){
         },
         function lookup_all_keys(err, test, keys){
             // inspect(test)
+            if (err) throw err;
             // group these calls together
             var group = this.group();
             test_loaded = new model.Test().load(test)
@@ -28,31 +29,37 @@ function test_stats(req, res, params){
             
             keys.forEach(function(k){
                 var key = k.toString()
-                puts(key)
+                // puts(key)
                 test_loaded.stats.keys.push(key)
                 redis.get(key, group())
             })
         },
         function render(err, results){
+            if (err) throw err;
             var key;
             results.forEach(function(val, i){
                 key = test_loaded.stats.keys[i]
                 val = parseInt(val.toString(), 10)
                 test_loaded.stats[key] = val
             })
-            inspect(test_loaded.stats)
+            // for (var i=0; i < results.length; i++){
+            //     key = test_loaded.stats.keys[i]
+            //     val = parseInt(val.toString(), 10)
+            //     test_loaded.stats[key] = val
+            // }
+
+
+            // inspect(test_loaded.stats)
             var sums = test_loaded.stat_sum()
-            
             // inspect(results)
-            if (config.env =='development'){
-                res.body('/*\n')
-                res.body('test sums:\n')
-                res.body(sys.inspect(sums, true, 3))
-                res.body('\n*/\n')
-            }
+            // if (config.env =='development'){
+            //     res.body('/*\n')
+            //     res.body('test sums:\n')
+            //     res.body(sys.inspect(sums, true, 3))
+            //     res.body('\n*/\n')
+            // }
             res.body(JSON.stringify(sums))
             end(req, res)        
         }
-    
     )
 }

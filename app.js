@@ -167,88 +167,109 @@ for(var i=0; i < dir.length; i++){
 /* main handler */
 
 function handler(req, res){
-    req.date = new Date();
-    
-    // create a few res methods...
-    res._body = [];
-    res.header = {'Cache-Control':'no-store'};
-    res.status_code = 200;
-    res.body = function(s){
-        this._body.push(s);
-    }
-    req.addListener('data', function(chunk){})
-    req.addListener('end', function(){
+        // save the date...
+        req.date = new Date();
         
-        var uri = url.parse(req.url),
-            path = uri.pathname,
-            params = (uri.query != undefined) ? qs.parse(uri.query) : {};
-        
-        // static hook for the client api when no web server is used
-        if (path == '/api/1.0/client.js'){
-            res.header['Content-Type'] = 'text/javascript'
-            res.body(client_js)
-            end(req, res)
+        // create a few response methods...
+        res._body = [];
+        res.header = {'Cache-Control':'no-store'};
+        res.status_code = 200;
+        res.body = function(s){
+            this._body.push(s);
         }
-        // otherwise this is a route request....
-        var route = route_match(path);
-        if (route) {
-            var route_params = route[1];
-            route = route[0];
-            
-            // merge the route params w/ the query params
-            for(var prop in route_params) {
-            	var val = route_params[prop];
-            	if (params[prop] === undefined) {
-                    params[prop] = val
-            	}
-            }
-            
-            // set the content-header...
-            res.header['Content-Type'] = route.content_type
-            
-            if (route.name == 'site_module_test'){
-                if (helper.has_variant(path) && helper.has_event(path)) {
-                    // we have a key route here...
-                    // check to see if this test is a var or event
-                    track(req, res, path)
-                    
-                } else {
-                    // we have a test route here...
-                    // sys.puts('=> Look up and return the test metadata')
-                    module_test(req, res, path, params)
-                }
-            
-            } else if (route.name == 'site_page_test'){
-                if (helper.has_variant(path) && helper.has_event(path)) {
-                    // check to see if this test is a var or event
-                    track(req, res, path)
-                } else {
-                    page_test(req, res, path, params)
-                }
 
-            } else if (route.name == 'site_funnel_test'){
-                if (helper.has_variant(path) && helper.has_event(path)) {
-                    // check to see if this test is a var or event
-                    track(req, res, path)
-                } else {
-                    // we have a test route here...
-                    funnel_test(req, res, path, params)
+        req.addListener('data', function(chunk){})
+        req.addListener('end', function(){
+            try{        
+                var uri = url.parse(req.url),
+                    path = uri.pathname,
+                    params = (uri.query != undefined) ? qs.parse(uri.query) : {};
+    
+                // static hook for the client api when no web server is used
+                // this is only loaded in dev mode...
+                if (path == '/api/1.0/client.js'){
+                    res.header['Content-Type'] = 'text/javascript'
+                    res.body(client_js)
+                    end(req, res)
+                } else if (path == '/favicon.ico') {
+                    res.header['Content-Type'] = 'image/vnd.microsoft.icon'
+                    res.body('')
+                    end(req, res)
                 }
-            } else if (route.name == 'site_bucket'){
-                track_bucket_value(req, res, path, params)
-            } else if (route.name == 'create_test'){
-                create_test(req, res)
-            } else if (route.name == 'test_stats'){
-                test_stats(req, res, params)
-            } else if (route.name == 'bucket_stats'){
-                bucket_stats(req, res, params)
-            } else {
-                res.body('undefined route')
-                end(req, res)
-            }
-        } 
         
-    })
+
+                // otherwise this is a route request....
+                var route = route_match(path);
+                if (route) {
+                    var route_params = route[1];
+                    route = route[0];
+        
+                    // merge the route params w/ the query params
+                    for(var prop in route_params) {
+                    	var val = route_params[prop];
+                    	if (params[prop] === undefined) {
+                            params[prop] = val
+                    	}
+                    }
+                    
+                    // set the content-header...
+                    res.header['Content-Type'] = route.content_type
+        
+                    if (route.name == 'site_module_test'){
+                        if (helper.has_variant(path) && helper.has_event(path)) {
+                            // we have a key route here...
+                            // check to see if this test is a var or event
+                            track(req, res, path)
+                
+                        } else {
+                            // we have a route here...
+                            module_test(req, res, path, params)
+                        }
+        
+                    } else if (route.name == 'site_page_test'){
+                        if (helper.has_variant(path) && helper.has_event(path)) {
+                            // check to see if this test is a var or event
+                            track(req, res, path)
+                        } else {
+                            page_test(req, res, path, params)
+                        }
+
+                    } else if (route.name == 'site_funnel_test'){
+                        if (helper.has_variant(path) && helper.has_event(path)) {
+                            // check to see if this test is a var or event
+                            track(req, res, path)
+                        } else {
+                            // we have a test route here...
+                            funnel_test(req, res, path, params)
+                        }
+                    } else if (route.name == 'site_bucket'){
+                        track_bucket_value(req, res, path, params)
+                    } else if (route.name == 'create_test'){
+                        create_test(req, res)
+                    } else if (route.name == 'test_stats'){
+                        test_stats(req, res, params)
+                    } else if (route.name == 'bucket_stats'){
+                        bucket_stats(req, res, params)
+                    } else {
+                        res.body('undefined route')
+                        end(req, res)
+                    }
+                } 
+            } catch(e){
+                res.status_code = 500
+                end(req, res)
+                puts('////////////////')
+                puts(res.status_code)
+                puts(req.method + ' ' + req.url)
+                inspect(req.headers)
+                puts('')
+                puts(e.stack)
+                puts('////////////////')
+            }
+        })
+
+    
+    
 }
 
 // expose the handler for good times..
@@ -261,11 +282,12 @@ var config = require('./app/config').init()
 puts("=> Starting application in " + config.env + " mode")
 
 /* load the static js file */
-// clean this up so we don't load in production
-var client_js = fs.readFileSync("static/api/1.0/client.js").toString();
-
+var client_js = '', favicon='';
 /* restart on file change... */
-if (config.env == 'development') {watch_files()}
+if (config.env == 'development') {
+    watch_files()
+    client_js = fs.readFileSync("static/api/1.0/client.js").toString();
+}
 
 /* local ref to the redis client */
 var redis = config.redis

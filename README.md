@@ -1,6 +1,5 @@
 # Still in development...
 
-I figured I should check this in before anything happens to the code... 
 Right now, there is no admin to create the tests and easily see the stats.
 Still working on this piece. Application errors aren't being handled completely. I also have a demo application to show how all this works.
 
@@ -12,8 +11,8 @@ See below for a description of the different testing types and how to integrate 
 
 # Testing Types
 
-	- Bucket: A bucket test is used for tracking well, buckets. You could use it to track pageviews or how many times completed a certain action, etc. You can track these on either the client or the server.
-	- Module: A module test swtiches out a portion of a webpage. It's purely client-side. A module test also allows for tracking events an associating them with the corresponding variant.
+	- Bucket: A bucket test is used for tracking well, buckets. You could use it to track pageviews or how many times an action was completed, etc. You can track these on either the client or the server.
+	- Module: A module test swtiches out a portion of a webpage. It's purely client-side. A module test also allows for tracking events and associating them with the corresponding variant.
 	- Page: A page test is used to render one version of a webpage or another. Also allows for tracking events from the client. See below for example. 
 	- Funnel: A funnel test is nothing more then a series of page tests. The only difference is that the variant is sticky. So, if a user sees variant 'b' for step 1, then they'll see variant 'b' throughout the remaining steps. Also allows for tracking events from the client. 
 
@@ -37,11 +36,19 @@ See below for a description of the different testing types and how to integrate 
 
 # Stats
 
+To view the stats for a particular test:
+
+	http://localhost:8000/stats/test/:test_key
+
 All tests aggregate by date the variant and event totals. In addition, funnel tests also aggregate the step numbers, too.
 
 For example, if you want to view one of the fixture stats:
 
 	http://localhost:8000/stats/test/s/domain.com/p/t/page_test
+
+To view the stats for a particular bucket:
+
+	http://localhost:8000/stats/bucket/:bucket_key
 
 # Testing the application
 
@@ -130,16 +137,16 @@ In the corresponding controller (let's say you're using nodejs):
 	    });
 	}
 
-Example of what page A looks like:
+Markup for /somepage - variant a:
 
 	<html>
 		<head>
 			<title>Page A</title>
 			<script type="text/javascript" src="http://localhost:8000/api/1.0/client.js"></script>
 			<script type="text/javascript">
-			multivar.base_url = 'http://localhost:8000';
-			multivar.site = 'domain.com';
-			multivar.page(<%=JSON.stringify(test)%>)
+				multivar.base_url = 'http://localhost:8000';
+				multivar.site = 'domain.com';
+				multivar.page(<%=JSON.stringify(test)%>)
 			</script>
 		</head>
 		<body>
@@ -153,8 +160,10 @@ Example of what page A looks like:
 		</body>
 	</html>
 
+
 # Hosting this application
 
-In the above examples, we're serving the node-multivariate app on localhost:8000. 
-Since this doesn't work in production you'll probably want to host this through a sub-domain.
+In the above example, we're serving the multivariate app on localhost:8000. 
+You'll probably want to host this on a different domain or sub-domain of your application.
+In addition, also point your webserver to the 'static/' directory so it handles serving the client api.
 

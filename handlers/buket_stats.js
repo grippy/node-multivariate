@@ -5,7 +5,7 @@ function bucket_stats(req, res, params){
     // inspect(params)
     
     var bucket_key = '/s/' + params.site + '/b/'+ params.name 
-    puts(bucket_key)
+    // puts(bucket_key)
     
     var bucket = new model.Bucket()
     bucket.name = params.name;
