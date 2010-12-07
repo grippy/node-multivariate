@@ -1,7 +1,7 @@
 # Still in development...
 
-Right now, there is no admin to create the tests and easily see the stats.
-Still working on this piece. Application errors aren't being handled completely. I also have a demo application to show how all this works.
+Right now, there is no admin to create the tests and see the stats with pretty pictures.
+I also have a demo application to show how all this works.
 
 # Description:
 
@@ -42,7 +42,7 @@ To view the stats for a particular test:
 
 All tests aggregate by date the variant and event totals. In addition, funnel tests also aggregate the step numbers, too.
 
-For example, if you want to view one of the fixture stats:
+For example, if you want to view the stats from one of the fixtures:
 
 	http://localhost:8000/stats/test/s/domain.com/p/t/page_test
 
@@ -151,7 +151,7 @@ Markup for /somepage - variant a:
 		</head>
 		<body>
 			<h1>Page Animal!</h1>
-			<a href="#track" onclick="multivar.track('<%=test.name%>', 'nice_fucker')">Nice!</a> | 
+			<a href="#track" onclick="multivar.track('<%=test.name%>', 'nice')">Nice!</a> | 
 			<a href="#track" onclick="multivar.track('<%=test.name%>', 'hell_yeah')">Hell Yeah!</a>
 			<br />
 			<img src="http://i398.photobucket.com/albums/pp62/michelequintana/muppets-animal.jpg" />
@@ -164,6 +164,13 @@ Markup for /somepage - variant a:
 # Hosting this application
 
 In the above example, we're serving the multivariate app on localhost:8000. 
-You'll probably want to host this on a different domain or sub-domain of your application.
+You'll probably want to host this on a different domain or sub-domain of your application and proxy the requests.
 In addition, also point your webserver to the 'static/' directory so it handles serving the client api.
+
+# Performance
+
+From my testing using apache bench, most of the api calls to this application can handle between 1200-1400rps. 
+The stats api calls are a little lower since they require some slower redis lookups to return all the keys for a test.
+
+
 
