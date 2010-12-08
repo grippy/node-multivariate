@@ -2,8 +2,8 @@
 
 This is still in development mode (hence no tag exists with a version number). 
 It should be production ready if you want to try it out. 
-Be advised, no flow exists for creating the tests right now.
 Some sort of admin section to create new tests, along with test stats and graphs, is in the works.
+You can manually load tests right now using the fixtures (see below).
 
 # Description:
 
