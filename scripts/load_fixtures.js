@@ -1,6 +1,6 @@
 var sys = require('sys'),
     fixtures = require('../test/fixtures'),
-    config = require('./app/config').init(),
+    config = require('../app/config').init(),
     model = require('../models')
 
 var redis = config.redis
