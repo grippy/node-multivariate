@@ -11,7 +11,12 @@ function end(req, res){
     sys.print('['+ req.socket.server.port.toString())
     sys.print('/' + process.pid)
     sys.print('/' + bit_to_mb(mem.rss) + 'MB]')
-    sys.print('['+ req.socket.remoteAddress +']')
+    
+    if (req.headers['x-real-ip'] != undefined){
+        sys.print('[' + req.headers['x-real-ip'] + ']')
+    } else {
+        sys.print('[' + req.socket.remoteAddress + ']')
+    }
     sys.print('[' + req.method + ']')
     sys.print(' ' + (diff / 1000).toString())
     sys.puts(' - ' + req.url)
@@ -24,7 +29,7 @@ function end(req, res){
     res.write(body)
     res.end()
 
-    inspect(req)
+    // inspect(req)
 
 }
 
