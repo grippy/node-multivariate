@@ -1,7 +1,9 @@
 # Still in development...
 
-Right now, there is no admin to create the tests and see the stats with pretty pictures.
-I also have a demo application to show how all this works.
+This is still in development mode (hence no tag exists with a version number). 
+It should be production ready if you want to try it out. 
+Be advised, no flow exists for creating the tests right now.
+Some sort of admin section to create new tests, along with test stats and graphs, is in the works.
 
 # Description:
 
@@ -17,7 +19,7 @@ This application has been tested on node 2.x and Redis 2.x.
 	git submodule init
 	git submodule update
 
-The only submodule used is the redis-node (https://github.com/bnoguchi/redis-node).
+The only submodule used is redis-node (https://github.com/bnoguchi/redis-node).
 
 # Testing Types
 
