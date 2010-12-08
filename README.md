@@ -50,6 +50,8 @@ To view the stats for a particular bucket:
 
 	http://localhost:8000/stats/bucket/:bucket_key
 
+(These routes will eventually migrate to the admin app when it's ready.)
+
 # Testing the application
 
 To run the test suite, fire up:
@@ -80,8 +82,8 @@ Then you can render the correct page based on the variant value returned from th
 
 # Bot Filtering
 
-Both page and funnel testing allow for the removal of bots from the testing cycle. 
-See app/crawlers.js for the list of basic user agent regex expressions. 
+Both page and funnel testing allow for the removal of bots from the test flow(s). 
+See 'app/crawlers.js' for the list of basic user agent regex expressions.
 To filter by user agent, just pass it along with the page or funnel test request.
 
 # Example
@@ -160,7 +162,6 @@ Markup for /somepage - variant a:
 		</body>
 	</html>
 
-
 # Hosting this application
 
 In the above example, we're serving the multivariate app on localhost:8000. 
@@ -169,8 +170,8 @@ In addition, also point your webserver to the 'static/' directory so it handles 
 
 # Performance
 
-From my testing using apache bench, most of the api calls to this application can handle between 1200-1400rps. 
-The stats api calls are a little lower since they require some slower redis lookups to return all the keys for a test.
+From my testing using apache bench, most of the api calls to this application can handle between 1200-1400rps (tested on my MacBook Pro 2.4 GHz Core 2 Duo/2GB SDRAM).
+The stats api calls are a little lower since they require some multiple redis lookups to return all the keys for a test.
 
 
 

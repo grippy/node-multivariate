@@ -4,6 +4,7 @@ var sys = require("sys"),
     url = require('url'),
     qs = require("querystring"),
     Step = require('./app/step'),
+    routes = require('./app/routes'),
     model = require('./models'),
     crawler = require('./app/crawlers').crawler,
     helper = require('./app/helper').helper
@@ -32,117 +33,7 @@ function watch_files(){
 	watch(__dirname,".js", function(){sys.puts('File changed. Restarting...')});
 }
 /*////////////////////////////////////////////////////////////////////////////////*/
-/* route class */
-function Route(name, path){
-	this.name = name;
-	this.path = path;
-	this.tokens = [];
-	this.pattern = null;
-	this.content_type = 'text/javascript';
-	this.regify()
-	return this;
-}
-Route.prototype.regify = function(){
-	var parts = this.path.split('/'), part, grouping = [];
-	for (var i=0; i < parts.length; i++){
-		part = parts[i]
-		if (part.indexOf(':') == 0) {
-		    
-		    if (part.indexOf('*') == -1){
-    			this.tokens.push(part.replace(':', ''))
-    			part = '([a-zA-Z0-9,-.%_~;]*)'
-		    } else {
-		        // matched a wild card glob...
-                this.tokens.push(part.replace(':', '').replace('*', ''))
-                part = '([a-zA-Z0-9,-.%_~;\/]*)';
-		    }
-		    
-		}
-		grouping.push(part)
-	}
-	this.pattern = new RegExp("^"+grouping.join('/'))
-}
-Route.prototype.parse = function(path){
-	var grouping = this.pattern.exec(path)
-	var params = {};
-	for(var i=0; i < this.tokens.length; i++){
-		params[this.tokens[i]] = grouping[i + 1]
-	}
-	return params
-}
-Route.prototype.to_url = function(){
-	// take the arguments and replace tokens
-	var token, 
-		path = this.path,
-		params = (arguments[0] != undefined) ? arguments[0] : {},
-		query = [];
-	for (var i=0; i < this.tokens.length; i++){
-		token = this.tokens[i];
-		path = path.replace(':'+ token, params[token])
-		params[token] = null;
-	}
-	var val, kwargs = [];
-	for(var prop in params){
-		val = params[prop]
-		if (val) {
-			var a = []
-			a.push(prop)
-			a.push('=')
-			a.push(qs.escape(val.toString()))
-			kwargs.push(a.join(''))
-		}
-	}
-	if (kwargs.length > 0) path += '?' + kwargs.join('&');
-	return path
-}
-/*////////////////////////////////////////////////////////////////////////////////*/
-/* route helper functions */
-function setup_routes(){
-	// sort descending
-	routes.sort(function(a, b){
-		return b.path.length - a.path.length;
-	})
-	// cache the route path by name...
-    // var r;
-    // for(var i=0; i < this.routes.length; i++){
-    //  r = this.routes[i];
-    //  this.routes_by_name[r.name] = r
-    // }
-}
-function route_match(path){
-     // return a route from the specified path..
-     var route, 
-         params,
-         path = path.replace('.json', '').replace('.js','');
-     if (route_path_cache[path] != undefined){
-         // puts('=> Retrn from route_path_cache')
-         route = route_path_cache[path];
-     } else {
-         for (var i=0; i < routes.length; i++){
-             route = routes[i];
-             if (route.pattern.test(path)) { 
-                // check to make sure root is actually root
-                if ((route.path === '/' && path !== '/')){
-                     route = null
-                }
-                break
-             } 
-             route = null // so we don't end up with a route if nothing matches
-         }
-     }
-     if (route){
-         if (route_path_cache[path] == undefined) {
-             route_path_cache[path] = route;
-         }
-         return [route].concat(route.parse(path))
-     }
-     return null;
-}
-
-
-/*////////////////////////////////////////////////////////////////////////////////*/
 /* app cache */
-var route_path_cache = {}
 var test_cache = {}
 var bucket_members_cache = {}
 
@@ -151,7 +42,7 @@ var bucket_members_cache = {}
 
 /* 
     Don't use the common js pattern for loading the handlers... 
-    Treat the handlers more like a virtual include.
+    Treat the handlers more like virtual includes.
     Keeps them clean and dry this way
 */
 var dir = fs.readdirSync('./handlers'), fd;
@@ -161,7 +52,6 @@ for(var i=0; i < dir.length; i++){
         eval(fs.readFileSync('handlers/' + fd).toString())
     }
 }
-
 
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* main handler */
@@ -196,10 +86,8 @@ function handler(req, res){
                     res.body('')
                     end(req, res)
                 }
-        
-
                 // otherwise this is a route request....
-                var route = route_match(path);
+                var route = routes.match(path);
                 if (route) {
                     var route_params = route[1];
                     route = route[0];
@@ -275,12 +163,13 @@ function handler(req, res){
 // expose the handler for good times..
 exports.handler = handler;
 
-
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* grab the config */
 var config = require('./app/config').init()
 puts("=> Starting application in " + config.env + " mode")
 
+
+/*////////////////////////////////////////////////////////////////////////////////*/
 /* load the static js file */
 var client_js = '', favicon='';
 /* restart on file change... */
@@ -289,23 +178,26 @@ if (config.env == 'development') {
     client_js = fs.readFileSync("static/api/1.0/client.js").toString();
 }
 
+/*////////////////////////////////////////////////////////////////////////////////*/
 /* local ref to the redis client */
 var redis = config.redis
 
-// eat the meat and lick the gravy.
-var routes = [
-    new Route('root', '/'),
-    new Route('create_test', '/create/test'),
-    new Route('test_stats', '/stats/test/:test_key*'),
-    new Route('bucket_stats', '/stats/bucket/s/:site/b/:name'),
-    new Route('site_bucket', '/s/:site/b/:name/:value'),
-    new Route('site_page_test', '/s/:site/p/t/:name'),
-    new Route('site_module_test', '/s/:site/m/t/:name'),
-    new Route('site_funnel_test', '/s/:site/f/t/:name')
-
+/*////////////////////////////////////////////////////////////////////////////////*/
+// routes... eat the meat and lick the gravy.
+routes.routes = [
+    new routes.Route('root', '/'),
+    new routes.Route('create_test', '/create/test'),
+    new routes.Route('test_stats', '/stats/test/:test_key*'),
+    new routes.Route('bucket_stats', '/stats/bucket/s/:site/b/:name'),
+    new routes.Route('site_bucket', '/s/:site/b/:name/:value'),
+    new routes.Route('site_page_test', '/s/:site/p/t/:name'),
+    new routes.Route('site_module_test', '/s/:site/m/t/:name'),
+    new routes.Route('site_funnel_test', '/s/:site/f/t/:name')
 ]
-setup_routes()
+routes.finalize()
 
+/*////////////////////////////////////////////////////////////////////////////////*/
+/* start the server */
 var server = http.createServer(function(req, res){
     handler(req, res)
 })
