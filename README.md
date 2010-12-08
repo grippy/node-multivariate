@@ -9,6 +9,13 @@ This simple testing framework hopes to make a/b or multivariate webpage testing 
 It also allows for event tracking and bucket tracking.
 See below for a description of the different testing types and how to integrate them.
 
+# Installation
+
+git checkout path
+git submodule init
+git submodule update
+
+
 # Testing Types
 
 	- Bucket: A bucket test is used for tracking well, buckets. You could use it to track pageviews or how many times an action was completed, etc. You can track these on either the client or the server.

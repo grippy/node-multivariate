@@ -7,7 +7,8 @@ function end(req, res){
     
     var mem = process.memoryUsage()
     sys.print(req.date.log_format())
-    sys.print('[' + process.pid)
+    sys.print('['+ req.socket.server.port.toString())
+    sys.print('/' + process.pid)
     sys.print('/' + bit_to_mb(mem.rss) + 'MB]')
     sys.print('[' + req.method + ']')
     sys.print(' ' + (diff / 1000).toString())

@@ -57,6 +57,7 @@ for(var i=0; i < dir.length; i++){
 /* main handler */
 
 function handler(req, res){
+
         // save the date...
         req.date = new Date();
         
@@ -198,8 +199,36 @@ routes.finalize()
 
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* start the server */
-var server = http.createServer(function(req, res){
-    handler(req, res)
+
+var ports = config.app_port;
+
+ports.forEach(function(port){
+    var server = http.createServer(function(req, res){
+        handler(req, res)
+    })
+    server.port = port
+    server.listen(port);
+    sys.puts('=> Server listening on http://127.0.0.1:'+ port +' (pid:' + process.pid +')')
 })
-server.listen(config.app_port);
-sys.puts('=> Server listening on http://127.0.0.1:'+ config.app_port +' (pid:' + process.pid +')')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
