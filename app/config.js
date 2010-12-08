@@ -1,5 +1,5 @@
 var sys = require('sys'), 
-    redis = require('./redis-node'),
+    redis = require('../app/redis-node'),
     environment = require('../config/environment')
 
 function puts(s){sys.puts(s)}
