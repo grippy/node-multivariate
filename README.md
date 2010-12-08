@@ -11,10 +11,13 @@ See below for a description of the different testing types and how to integrate 
 
 # Installation
 
-git checkout path
-git submodule init
-git submodule update
+This application has been tested on node 2.x and Redis 2.x.
 
+	git clone git://github.com/grippy/node-multivariate.git
+	git submodule init
+	git submodule update
+
+The only submodule used is the redis-node (https://github.com/bnoguchi/redis-node).
 
 # Testing Types
 
