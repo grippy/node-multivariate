@@ -37,12 +37,8 @@ function module_test(req, res, path, params){
                 type: test.type,
                 variant: variant
               })
-              
-              
               if (not_undef(params.jsonp)){
-                  res.body('var result=' + result + '; ')
-                  res.body(params.jsonp + '(result);')
-                  
+                  res.body(params.jsonp + '('+ result +');')
               } else {
                   res.body(result)
               }
