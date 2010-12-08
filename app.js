@@ -57,7 +57,6 @@ for(var i=0; i < dir.length; i++){
 /* main handler */
 
 function handler(req, res){
-
         // save the date...
         req.date = new Date();
         
