@@ -5,7 +5,8 @@ var sys = require('sys'),
 function puts(s){sys.puts(s)}
 function inspect(o){puts(sys.inspect(o))}
 
-var env = 'development';
+var env = 'development',
+    app_cmd = ''; // start (default), stop, restart / only in production mode
 
 function parse_env(){
     var args = process.argv
@@ -22,8 +23,11 @@ function parse_argv(){
     for(var i=0; i < args.length; i++){
         arg = args[i];
         if (arg.indexOf('-')==0){
-            if (arg.indexOf('-p') > -1){
-                port = args[i + 1]
+            // if (arg.indexOf('-p') > -1){
+            //     port = args[i + 1]
+            // }
+            if (arg.indexOf('-c') > -1){
+                app_cmd = args[i + 1]
             }
         }
     }
@@ -37,7 +41,8 @@ exports.init = function(){
         parse_env()
         parse_argv()
         var config = eval('environment.' + env)
-        config.env = env
+        config.env = env;
+        config.app_cmd = app_cmd;
         config.redis = redis.createClient(config.redis_port, config.redis_host)
         
         // By default, the redis client connects to db0. 

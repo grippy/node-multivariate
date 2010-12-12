@@ -5,7 +5,11 @@ var sys = require('sys'),
 var args = process.argv.slice(2, process.argv.length)
 /*
     The development server uses autoexit to monit file changes and then restarts...
-    This creates two processes in dev mode.
+    This creates a parent/child which restarts the server on file change.
+
+    commands...
+    start - node scripts/development.js
+    
 */
 function spawn(){
     var child = child_process.spawn('node', ['app.js'].concat(args))
