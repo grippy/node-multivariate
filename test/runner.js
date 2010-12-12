@@ -6,9 +6,10 @@ var sys = require('sys'),
     Step = require('../app/step'),
     helper = require('../app/helper').helper
 
+// push the testing param on to the args...
 process.argv.push('testing')
 
-// grab redis from the config
+// pull out the scope, remove the cancer...
 var model, config, redis, client, testing_app_pid
 
 function print(s){sys.print(s)}

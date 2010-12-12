@@ -102,7 +102,16 @@ function funnel_test(req, res, path, params){
     } else {
         // we have a crawler...
         // need to determine what to do here...
-        end(req, res)
+        
+          var result = {
+            name: params.name,
+            type: 'f',
+            variant: 'a',
+            step: '1',
+            next_step:null
+          }
+        res.body(JSON.stringify(result))
+        end(req, res)        
     }
 
 }

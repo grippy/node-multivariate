@@ -4,7 +4,6 @@
 
 function page_test(req, res, path, params){
     // puts(path)
-    // inspect(params)
     var user_agent = (params.user_agent!=undefined) ? unescape(params.user_agent) : '';
     if (!crawler(user_agent)) {
         var test_key = path
@@ -37,8 +36,6 @@ function page_test(req, res, path, params){
                   var i = test_count % 100;
                   var variant = test.spread.charAt(i)
                   var result = {
-                    // test_key: test.key,
-                    // variant_key: test.key + '/v/' + variant,
                     name: test.name,
                     type: test.type,
                     variant: variant
@@ -61,8 +58,13 @@ function page_test(req, res, path, params){
         )
     } else {
         // we have a crawler...
-        // need to determine what to do here...
-        end(req, res)
+          var result = {
+            name: params.name,
+            type: 'p',
+            variant: 'a'
+        }
+        res.body(JSON.stringify(result))
+        end(req, res)        
     }
 
 }
