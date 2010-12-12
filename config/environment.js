@@ -19,6 +19,6 @@ exports.production = {
     redis_host:'127.0.0.1',
     redis_port:6379,
     app_port:8000,
-    app_slaves:2, // only recognized when using node scripts/production.js
+    app_slaves:7, // only recognized when using node scripts/production.js
     admin_port:9000
 }
