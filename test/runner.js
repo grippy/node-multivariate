@@ -11,7 +11,6 @@ process.argv.push('testing')
 // grab redis from the config
 var model, config, redis, client, testing_app_pid
 
-
 function print(s){sys.print(s)}
 function puts(s){sys.puts(s)}
 function inspect(o){puts(sys.inspect(o, false, null))}
@@ -22,7 +21,6 @@ function error(e){
     })
     puts('------------------------------------')
 }
-
 
 function start_testing(){
     puts('')

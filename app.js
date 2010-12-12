@@ -7,7 +7,7 @@ var sys = require("sys"),
     routes = require('./app/routes'),
     model = require('./models'),
     crawler = require('./app/crawlers').crawler,
-    helper = require('./app/helper').helper
+    helper = require('./app/helper').helper;
 
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* helper functions */
@@ -30,7 +30,7 @@ function not_undef(v){return !undef(v)}
 function watch_files(){
     puts("=> Watching files") 
 	var watch = require('./app/autoexit').watch;
-	watch(__dirname,".js", function(){sys.puts('File changed. Restarting...')});
+	watch(__dirname,".js", function(){sys.puts('=> File changed. Restarting...')});
 }
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* app cache */
@@ -43,7 +43,7 @@ var bucket_members_cache = {}
 /* 
     Don't use the common js pattern for loading the handlers... 
     Treat the handlers more like virtual includes.
-    Keeps them clean and dry this way
+    Keeps them clean and dry this way...
 */
 var dir = fs.readdirSync('./handlers'), fd;
 for(var i=0; i < dir.length; i++){
@@ -67,7 +67,6 @@ function handler(req, res){
         res.body = function(s){
             this._body.push(s);
         }
-
         req.addListener('data', function(chunk){})
         req.addListener('end', function(){
             try{        
@@ -155,28 +154,21 @@ function handler(req, res){
                 puts('////////////////')
             }
         })
-
-    
-    
 }
 
 // expose the handler for good times..
 exports.handler = handler;
 
 /*////////////////////////////////////////////////////////////////////////////////*/
-/* grab the config */
-var config = require('./app/config').init()
-puts("=> Starting application in " + config.env + " mode")
 
 
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* load the static js file */
 var client_js = '', favicon='';
-/* restart on file change... */
-if (config.env == 'development') {
-    watch_files()
-    client_js = fs.readFileSync("static/api/1.0/client.js").toString();
-}
+
+/* grab the config */
+var config = require('./app/config').init()
+// puts("=> Starting application in " + config.env + " mode")
 
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* local ref to the redis client */
@@ -197,37 +189,21 @@ routes.routes = [
 routes.finalize()
 
 /*////////////////////////////////////////////////////////////////////////////////*/
-/* start the server */
+/* start the server only if development mode */
+/* development mode uses a file watcher to restart on changes this makes it way easier if we can start an app here */ 
+if (config.env == 'development') {
 
-var ports = config.app_port;
+    /* restart on file change... */
+    watch_files()
+    client_js = fs.readFileSync("static/api/1.0/client.js").toString();
+}
 
-ports.forEach(function(port){
-    var server = http.createServer(function(req, res){
+if (config.env == 'development' || config.env == 'testing'){
+    var http_server = http.createServer(function(req, res){
         handler(req, res)
     })
-    server.port = port
-    server.listen(port);
-    sys.puts('=> Server listening on http://127.0.0.1:'+ port +' (pid:' + process.pid +')')
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    http_server.port = config.app_port
+    http_server.listen(config.app_port);
+    sys.puts('=> Server listening on http://127.0.0.1:'+ http_server.port +' (pid:' + process.pid +')')    
+}
