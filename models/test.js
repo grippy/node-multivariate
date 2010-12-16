@@ -1,11 +1,26 @@
 var sys = require('sys'), 
+    Step = require('../app/step'),
     Model = require('../app/model').Model,
     Extend = require('../app/model').Extend,
-    config = require('../app/config').init(),
-    redis = config.redis
+    config = require('../app/config').init();
+
+var redis = config.redis
 
 function Test(){return this}
 Test.prototype = {
+    
+    // properties:{
+    //     'key': prop.string({empty:null, nullable:false}),
+    //     'name': prop.string({empty:'Loser', nullable:false, max:140, match:'reg ex pattern'}),
+    //     'type': prop.enums({empty:null, nullable:false, options:['p','f','m']}),
+    //     'site': prop.string({empty:null, nullable:false}),
+    //     'variants': prop.string({empty:null, nullable:false}),
+    //     'distribution': prop.list({empty:null, nullable:false}),
+    //     'spread': prop.string({empty:null, nullable:false}),
+    //     'dates': prop.string({empty:'', nullable:false}),
+    //     'events': prop.string({empty:'', nullable:false})
+    // },
+    
     init:function(){},
     
     // hash values contain string lists...
@@ -70,6 +85,147 @@ Test.prototype = {
         }
         return null;
     },
+    
+    base:function(props){
+        // add some property checks here...
+        var errors = []
+        
+        // check for minimum properties and throw error if missing
+        var keys = ['name', 'type', 'variants', 'distribution']
+        for (var i=0, ii=keys.length, key; i<ii;i++){
+            key = keys[i]
+            if (props[key] == undefined){
+                throw new Error('Missing required property: ' + key);
+            }
+        }
+        
+        //check type
+        var pass = false;
+        for (var i=0, allowed=['p', 'f', 'm'], ii=allowed.length; i < ii; i++){
+            if (props.type == allowed[i]){
+                pass = true;
+                break
+            }
+            
+        }
+        if (!pass) errors.push('type must be p, f, m')
+        
+        // determine the spread from the variant distro:
+        var variants = props.variants.split(','),
+            distro = props.distribution.split(',')
+        
+        // just-in-case a spread was passed in the props...
+        if (props.spread == undefined){
+            // check distro to make sure it equals 100
+            var cnt=0;
+            for(var i=0, ii=distro.length;i<ii;i++){
+                cnt+=parseInt(distro[i], 10)
+            }
+            if (cnt != 100){
+                errors.push('distribution must be equal to 100')
+            }
+            
+            var cnt=0, spread = '', tmp='', percent;
+            for (var i=0, ii=distro.length; i < ii; i++){
+                    cnt = parseInt(distro[i], 10);
+                    variant = variants[i]
+                    while(cnt > 0){
+                        spread += variant;
+                        cnt--
+                    }
+                }
+            // set spread
+            props.spread = spread
+        }
+
+        // check spread...
+        if (props.spread.length != 100){
+            errors.push('spread must be exactly 100 characters')
+        }
+        // check to see if this is a funnel test
+        if (props.type=='f'){
+            if (props.steps == undefined){
+                errors.push('steps must contain a value for funnel tests')
+            } else if(props.steps.length == 0){
+                errors.push('steps must contain a value for funnel tests')
+            }
+        }
+        // set default active if missing...
+        if (props.active == undefined){
+            props.active = false;
+        }
+        // throw errors...
+        if (errors.length){
+            throw new Error(errors.join('\n'))
+        }
+        // set empty values...        
+        props.dates=''
+        props.events=''
+        // take the loaded values and create key:
+        props.key = '/s/' + props.site + '/' + props.type + '/t/' + props.name;        
+        // sys.puts(sys.inspect(props))
+
+        // pass to create, load, and mark dirty...
+        this.create(props)
+        return this
+    },
+
+    save:function(cb){
+        var callback = (arguments.length) ? arguments[0] : function(err, success){};
+        var dirty = this.dirty_props();
+        if (dirty[0]){
+            var self = this;
+            redis.hmset(dirty[0], dirty[1], callback)
+        } else {
+            // nothing dirty...
+            callback(null, null)
+        }
+
+    },
+    
+    reset:function(){
+        // reset all the redis keys for this.key
+        var callback = (arguments.length) ? arguments[0] : function(err, success){};
+        var self = this;
+        Step(
+            function keys(){
+                // redis.hgetall(self.key, this.parallel())
+                var key = self.key + '/*'
+                redis.keys(key, this)
+            },
+            function remove(err, keys){
+                if (err) throw err;
+                
+                if(keys.length){
+                    var group = this.group();
+                    keys = keys.sort()
+                    keys.forEach(function(k){
+                        var key = k.toString()
+                        sys.puts(key)
+                        redis.del(key, group())
+                    })
+                    
+                } else {
+                    return 0
+                }
+            },
+            function(err, success){
+                if(err) throw err;
+                if(success){
+                    sys.puts('Success!')
+                } else {
+                    sys.puts('Nothing to delete')
+                }
+                return null
+            },
+            callback
+            
+        )
+        this.events='';
+        this.dates='';
+
+    },
+    
     stat_sum:function(){
       if(this.type=='m' || this.type=='p'){
           return this.page_stat_sum()

@@ -31,16 +31,11 @@ var Model = {
     // overridable function called directly after loading...
     init:function(){},
     dirty_props:function(){
-        // create a dump string for redis...
-        // HMSET 	 key field1 value1 ... fieldN valueN 	 Set the hash fields to their respective values.
-        // for updates, only update the dirty values.
         var dirty = [this.key], props={}, name, update=false;
         for(p in this){
             if (p.indexOf('__') > -1){
                 name = p.replace('__','')
                 if (this._dirty || this[name] != this[p]) {
-                    // dirty.push(name)
-                    // dirty.push(this[name])
                     props[name] = this[name]
                     update = true;
                 }

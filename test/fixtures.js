@@ -1,3 +1,26 @@
+/*
+{
+    active:true,
+    name:'page_test',
+    site:'domain.com',
+    type:'p', // p (page), m (module), f (funnel)
+    variants:'a,b', // csv variants
+    distribution:'80,20', // csv variant percentages
+    step:'page1,page2,page3' // csv of page keys
+}
+
+*/
+
+exports.base = {
+    active:true,
+    name:'page_test',
+    site:'domain.com',
+    type:'p', // p (page), m (module), f (funnel)
+    variants:'a,b', // csv variants
+    distribution:'50,50' // csv variant percentages
+}
+
+
 exports.page_test = {
     active:true,
     key:'/s/domain.com/p/t/page_test',

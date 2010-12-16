@@ -1,0 +1,35 @@
+exports.tests = {
+    // module tests...
+    module_test:{
+        active:true,
+        name:'module_test',
+        site:'domain.com',
+        type:'m',
+        variants:'a,b',
+        distribution:'50,50',
+        spread:'abababababababababababababababababababababababababababababababababababababababababababababababababab'
+    },
+    // page tests...
+    page_test:{
+        active:true,
+        name:'page_test',
+        site:'domain.com',
+        type:'p',
+        variants:'a,b',
+        distribution:'50,50',
+        spread:'abababababababababababababababababababababababababababababababababababababababababababababababababab'
+    },
+    // funnel tests...
+    funnel_test:{
+        active:true,
+        name:'funnel_test',
+        site:'domain.com',
+        type:'f',
+        variants:'a,b',
+        distribution:'50,50',
+        spread:'abababababababababababababababababababababababababababababababababababababababababababababababababab',
+        steps:'page_1,page_2,page_3'
+    }
+}
+
+exports.bucket_test = '/s/domain.com/b/day'

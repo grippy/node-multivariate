@@ -1,7 +1,7 @@
 var sys = require('sys'),
     child_process = require('child_process'),
     assert = require("assert"),
-    fixtures = require('./fixtures'),
+    fixture = require('../fixtures/testing'),
     http = require('http'),
     Step = require('../app/step'),
     helper = require('../app/helper').helper
@@ -26,6 +26,12 @@ function error(e){
 function start_testing(){
     puts('')
     puts('Running tests...')
+    
+    var module_test = new model.Test().base(fixture.tests.module_test)
+    var page_test = new model.Test().base(fixture.tests.page_test)
+    var funnel_test = new model.Test().base(fixture.tests.funnel_test)
+
+    
     Step(
         
         // remove all keys in testing db
@@ -44,9 +50,10 @@ function start_testing(){
         function create_page_test(err, prev){
             if (err) error(err);
             puts('=> create_page_test')
-            var test = new model.Test().create(fixtures.page_test);
-            var dirty = test.dirty_props();
-            redis.hmset(dirty[0], dirty[1], this)
+            // var test = new model.Test().create(fixture.tests.page_test);
+            // var dirty = test.dirty_props();
+            // redis.hmset(dirty[0], dirty[1], this)
+            page_test.save(this)
         },
         function create_page_test_callback(err, result){
             if (err) error(err);
@@ -58,9 +65,8 @@ function start_testing(){
         // test page
         function page_test(err, prev){
             if (err) error(err);
-        
             puts('=> page_test')
-            redis.hgetall(fixtures.page_test.key, this)
+            redis.hgetall(page_test.key, this)
         },
         function page_test_callback(err, result){
             if (err) error(err);
@@ -74,7 +80,8 @@ function start_testing(){
             if (err) error(err);
             puts('=> page_test_api')
             var group = this.group();
-            get_group(fixtures.page_test.key, group)
+            get_group(page_test.key, group)
+            
         },
             function page_test_api_1(chunk){
                 // validate the api response
@@ -86,26 +93,26 @@ function start_testing(){
                 // fire off some test requests...
                 var group = this.group();
                 for(var i=0; i < 49; i++){
-                    get(fixtures.page_test.key, function(c){
+                    get(page_test.key, function(c){
                         // inspect(c.toString())
                     })
                 }
                 // fire off some test variant event requests...
-                var event_key = key(fixtures.page_test.key, 'v', 'a', 'e', 'whatevs');
+                var event_key = key(page_test.key, 'v', 'a', 'e', 'whatevs');
                 // puts(event_key)
                 for(var i=0; i < 69; i++){
                     get(event_key, function(c){
                         // inspect(c.toString())
                     })
                 }
-                event_key = key(fixtures.page_test.key, 'v', 'b', 'e', 'foreals');
+                event_key = key(page_test.key, 'v', 'b', 'e', 'foreals');
                 // puts(event_key)                
                 for(var i=0; i < 19; i++){
                     get(event_key, function(c){
                         // inspect(c.toString())
                     })
                 }
-                var test_stats_key = key('/stats','test' + fixtures.page_test.key)
+                var test_stats_key = key('/stats','test' + page_test.key)
                 // puts(test_stats_key)
                 get_group(test_stats_key, group)
         
@@ -128,9 +135,10 @@ function start_testing(){
         function create_module_test(err, prev){
             if (err) error(err);
             puts('=> create_module_test')
-            var test = new model.Test().create(fixtures.module_test);
-            var dirty = test.dirty_props();
-            redis.hmset(dirty[0], dirty[1], this)
+            // var test = new model.Test().create(fixture.tests.module_test);
+            // var dirty = test.dirty_props();
+            // redis.hmset(dirty[0], dirty[1], this)
+            module_test.save(this)
         },
         function create_module_test_callback(err, result){
             if (err) error(err);
@@ -142,9 +150,8 @@ function start_testing(){
         function module_test(err, prev){
             if (err) error(err);
             puts('=> module_test')
-            
             // was this model saved?
-            redis.hgetall(fixtures.module_test.key, this)
+            redis.hgetall(module_test.key, this)
         },
         function module_test_callback(err, result){
             if (err) error(err);
@@ -158,7 +165,7 @@ function start_testing(){
             if (err) error(err);
             puts('=> module_test_api')
             var group = this.group();
-            get_group(fixtures.module_test.key, group)
+            get_group(module_test.key, group)
         },
             function module_test_api_1(chunk){
                 // validate the api response
@@ -171,26 +178,26 @@ function start_testing(){
                 // fire off some test requests...
                 var group = this.group();
                 for(var i=0; i < 49; i++){
-                    get(fixtures.module_test.key, function(c){
+                    get(module_test.key, function(c){
                         // inspect(c.toString())
                     })
                 }
                 // fire off some test variant event requests...
-                var event_key = key(fixtures.module_test.key, 'v', 'a', 'e', 'whatevs');
+                var event_key = key(module_test.key, 'v', 'a', 'e', 'whatevs');
                 // puts(event_key)
                 for(var i=0; i < 101; i++){
                     get(event_key, function(c){
                         // inspect(c.toString())
                     })
                 }
-                var event_key = key(fixtures.module_test.key, 'v', 'b', 'e', 'foreals');
+                var event_key = key(module_test.key, 'v', 'b', 'e', 'foreals');
                 // puts(event_key)                
                 for(var i=0; i < 45; i++){
                     get(event_key, function(c){
                         // inspect(c.toString())
                     })
                 }
-                var test_stats_key = key('/stats','test' + fixtures.module_test.key)
+                var test_stats_key = key('/stats','test' + module_test.key)
                 // puts(test_stats_key)
                 get_group(test_stats_key, group)
                 
@@ -214,9 +221,10 @@ function start_testing(){
         function create_funnel_test(err, prev){
             if (err) error(err);
             puts('=> create_funnel_test')
-            var test = new model.Test().create(fixtures.funnel_test);
-            var dirty = test.dirty_props();
-            redis.hmset(dirty[0], dirty[1], this)
+            // var test = new model.Test().create(fixture.tests.funnel_test);
+            // var dirty = test.dirty_props();
+            // redis.hmset(dirty[0], dirty[1], this)
+            funnel_test.save(this)
         },
         function create_funnel_test_callback(err, result){
             if (err) error(err);
@@ -229,7 +237,7 @@ function start_testing(){
             if (err) error(err);
 
             puts('=> funnel_test')
-            redis.hgetall(fixtures.funnel_test.key, this)
+            redis.hgetall(funnel_test.key, this)
         },
         function funnel_test_callback(err, result){
             if (err) error(err);
@@ -243,7 +251,7 @@ function start_testing(){
             if (err) error(err);
             puts('=> funnel_test_api')
             var group = this.group();
-            get_group(fixtures.funnel_test.key, group)
+            get_group(funnel_test.key, group)
         },
             function funnel_test_step_1_api(chunk){
                 // validate the api response
@@ -257,7 +265,7 @@ function start_testing(){
                 
                 // let's go through the steps and make sure we stay on the same 
                 // var state = JSON.stringify(r)
-                var path = fixtures.funnel_test.key + '?state=' + escape(r.state)
+                var path = funnel_test.key + '?state=' + escape(r.state)
                 var group = this.group();
                 get_group(path, group)
                 
@@ -273,7 +281,7 @@ function start_testing(){
                 assert.equal(r.step, 'page_2')
                 assert.equal(r.next_step, 'page_3')
                 // var state = JSON.stringify(r)
-                var path = fixtures.funnel_test.key + '?state=' + escape(r.state)
+                var path = funnel_test.key + '?state=' + escape(r.state)
                 var group = this.group();
                 get_group(path, group)
             },
@@ -296,7 +304,7 @@ function start_testing(){
                 for(var i=0; i < 44; i++){
                     // 22 (a) and 22 (b)
                     puts(i)
-                    get(fixtures.funnel_test.key, function(c){
+                    get(funnel_test.key, function(c){
                         //inspect(c.toString())
                     })
                 }
@@ -304,19 +312,19 @@ function start_testing(){
                 var state 
                 state = JSON.stringify({"name":"funnel_test","type":"f","variant":"a","step":"page_2","next_step":"page_3"})
                 for(var i=0; i < 34; i++){
-                    get(fixtures.funnel_test.key + '?state=' + escape(state), function(c){
+                    get(funnel_test.key + '?state=' + escape(state), function(c){
                         // inspect(c.toString())
                     })
                 }
                 state = JSON.stringify({"name":"funnel_test","type":"f","variant":"a","step":"page_3","next_step":null})
                 for(var i=0; i < 24; i++){
-                    get(fixtures.funnel_test.key + '?state=' + escape(state), function(c){
+                    get(funnel_test.key + '?state=' + escape(state), function(c){
                         // inspect(c.toString())
                     })
                 }
                 
                 // fire off some test variant event requests...
-                var event_key = key(fixtures.funnel_test.key, 'step', 'page_1', 'v', 'a', 'e', 'whatevs');
+                var event_key = key(funnel_test.key, 'step', 'page_1', 'v', 'a', 'e', 'whatevs');
                 // puts(event_key)
                 for(var i=0; i < 101; i++){
                     get(event_key, function(c){
@@ -324,35 +332,35 @@ function start_testing(){
                     })
                 }
                 
-                var event_key = key(fixtures.funnel_test.key, 'step', 'page_2', 'v', 'a', 'e', 'whatevs');
+                var event_key = key(funnel_test.key, 'step', 'page_2', 'v', 'a', 'e', 'whatevs');
                 // puts(event_key)
                 for(var i=0; i < 51; i++){
                     get(event_key, function(c){
                         // inspect(c.toString())
                     })
                 }
-                var event_key = key(fixtures.funnel_test.key, 'step', 'page_3', 'v', 'a', 'e', 'whatevs');
+                var event_key = key(funnel_test.key, 'step', 'page_3', 'v', 'a', 'e', 'whatevs');
                 // puts(event_key)
                 for(var i=0; i < 12; i++){
                     get(event_key, function(c){
                         // inspect(c.toString())
                     })
                 }
-                var event_key = key(fixtures.funnel_test.key, 'step', 'page_1', 'v', 'b', 'e', 'foreals');
+                var event_key = key(funnel_test.key, 'step', 'page_1', 'v', 'b', 'e', 'foreals');
                 // puts(event_key)                
                 for(var i=0; i < 11; i++){
                     get(event_key, function(c){
                         // inspect(c.toString())
                     })
                 }
-                var event_key = key(fixtures.funnel_test.key, 'step', 'page_2', 'v', 'b', 'e', 'foreals');
+                var event_key = key(funnel_test.key, 'step', 'page_2', 'v', 'b', 'e', 'foreals');
                 // puts(event_key)                
                 for(var i=0; i < 14; i++){
                     get(event_key, function(c){
                         // inspect(c.toString())
                     })
                 }
-                var event_key = key(fixtures.funnel_test.key, 'step', 'page_3', 'v', 'b', 'e', 'foreals');
+                var event_key = key(funnel_test.key, 'step', 'page_3', 'v', 'b', 'e', 'foreals');
                 // puts(event_key)                
                 for(var i=0; i < 53; i++){
                     get(event_key, function(c){
@@ -360,7 +368,7 @@ function start_testing(){
                     })
                 }
                 
-                var test_stats_key = key('/stats','test' + fixtures.funnel_test.key)
+                var test_stats_key = key('/stats','test' + funnel_test.key)
                 get_group(test_stats_key, group)                
                 
                 // return true
@@ -384,7 +392,7 @@ function start_testing(){
         function bucket_test(err, prev){
             if (err) error(err);
             puts('=> bucket_test')
-            var bucket = fixtures.bucket_test
+            var bucket = fixture.bucket_test
             var days = [ 
                 ['monday', 25],
                 ['tuesday', 34],
@@ -450,6 +458,7 @@ function stop_testing(){
 }
 
 function get_group(url, group){
+    puts(url)
     var request = client.request('GET', url, {'host': 'localhost'});
     request.end()
     request.on('response', function(response) {
@@ -459,6 +468,7 @@ function get_group(url, group){
 }
 
 function get(url, cb){
+    puts(url)
     var request = client.request('GET', url, {'host': 'localhost'});
     request.end()
     request.on('response', function(response) {

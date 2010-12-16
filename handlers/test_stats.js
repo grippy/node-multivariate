@@ -26,13 +26,17 @@ function test_stats(req, res, params){
             if (!helper.is_funnel_test(test_key)){
                 keys=keys.slice(1, keys.length);
             }
-            
-            keys.forEach(function(k){
-                var key = k.toString()
-                // puts(key)
-                test_loaded.stats.keys.push(key)
-                redis.get(key, group())
-            })
+            if (keys.length){
+                keys.forEach(function(k){
+                    var key = k.toString()
+                    // puts(key)
+                    test_loaded.stats.keys.push(key)
+                    redis.get(key, group())
+                })
+            } else {
+                // return an empty results set since no keys exist
+                return []
+            }
         },
         function render(err, results){
             if (err) throw err;

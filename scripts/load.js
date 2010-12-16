@@ -1,47 +1,126 @@
 var sys = require('sys'),
-    fixtures = require('../test/fixtures'),
     config = require('../app/config').init(),
-    model = require('../models')
+    model = require('../models');
 
+var args = process.argv.slice(2, process.argv.length)
+var fixture = require('../fixtures/' + config.env);
 var redis = config.redis
 
 function print(s){sys.print(s)}
 function puts(s){sys.puts(s)}
 function inspect(o){puts(sys.inspect(o))}
 
-// make this load a file
-throw new Error('Not hooked up yet.')
+// var keys=[]
+// args.forEach(function(s){
+//     if(s!='production' || s!='development' || s!='testing'){
+//         keys.push(s)
+//     }
+// })
+// 
+// // no args passed so load them all...
+// if(!keys.length){
+//     
+// }
+
+puts('--------------------------')
+puts('Tests for ' + config.env)
+puts('--------------------------')
+for(var i=0, ii=fixture.tests.length, test; i<ii;i++){
+    test = fixture.tests[i]
+    puts(i + '. ' + test.name)
+}
+var i=0, test_name=[], test_print=[];
+for(var p in fixture.tests){
+    test = fixture.tests[p]
+    test_name.push(p)
+    test_print.push(i + '. ' + test.name)
+    i++
+}
 
 
-// puts('Loading fixtures for ' + config.env)
-// 
-// var test = new model.Test().create(fixtures.page_test)
-// var dirty = test.dirty_props()
-// if (dirty[0]){
-//     redis.hmset(dirty[0], dirty[1], function(err, created){
-//         if(created){
-//             puts('Created fixtures.page_test')
-//         }
-//     })
-// }
-// 
-// var test = new model.Test().create(fixtures.module_test)
-// var dirty = test.dirty_props()
-// if (dirty[0]){
-//     redis.hmset(dirty[0], dirty[1], function(err, created){
-//         if(created){
-//             puts('Created fixtures.module_test')
-//         }
-//     })
-// }
-// 
-// var test = new model.Test().create(fixtures.funnel_test)
-// var dirty = test.dirty_props()
-// if (dirty[0]){
-//     redis.hmset(dirty[0], dirty[1], function(err, created){
-//         if(created){
-//             puts('Created fixtures.funnel_test')
-//             process.kill(process.pid)
-//         }
-//     })
-// }
+
+function print_tests(){
+    puts(test_print.join('\n'))
+    puts('--------------------------')
+    puts('Command flags:')
+    puts('  -r : reset all keys for test (includes stats and counters)')
+    puts('Enter test number or name to load:')
+    puts('--------------------------')
+}
+
+function load_test(name, reset){
+    var props = fixture.tests[name]
+    if (props != undefined){
+        puts('=> New test values...')
+        inspect(props)
+    
+        var test = new model.Test().base(props)
+        var save_callback = function(err, success){
+            // inspect(test)
+            puts('--------------------------')
+            print_tests()
+        }
+    
+        if(reset){
+            puts('=> Reseting Test and Removing all Keys...')
+            test.reset(function(err, success){
+                test.save(save_callback)
+            })
+        } else {
+            puts('=> Saving Test Metadata...')
+            test.save(save_callback)
+        }
+        
+    } else {
+
+        puts('--------------------------')
+        puts('!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        puts('No props loaded for ' + name)
+        puts('!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        puts('--------------------------')
+        print_tests()
+    }
+
+}
+print_tests()
+
+var stdin = process.openStdin();
+stdin.setEncoding('utf8');
+
+stdin.on('data', function (chunk) {
+    chunk = chunk.replace(/^\s+|\s+$/g, '')
+    if (chunk.length == 0){
+        puts('=> Missing input: type test name or number')
+        return
+    }
+    puts('--------------------------')
+    var reset = false;
+    if (chunk.indexOf('-r') > -1){
+        chunk=chunk.replace('-r','').replace(/^\s+|\s+$/g, '')
+        reset=true
+    }
+    
+    var parts = chunk.split(' ') // trim whitespace
+    var is_num = new RegExp(/^[0-9]/);
+    var name = parts[0]
+    var num = parseInt(parts[0])
+    
+    if (is_num.test(name)){
+        name = test_name[num]
+    }
+    
+    // complete all the passed vars
+    var args = [name].concat(parts.slice(1, parts.length))
+
+    // inspect(fixture.tests)
+    for(var i=0,ii=args.length,arg; i<ii;i++){
+        arg=args[i]
+        load_test(arg, reset)
+    }
+
+    // process.stdout.write(chunk);
+});
+
+stdin.on('end', function () {
+  process.stdout.write('end');
+});

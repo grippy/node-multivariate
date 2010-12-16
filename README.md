@@ -1,8 +1,9 @@
 # Still in development...
 
 This is still in development mode (hence no tag exists with a version number). 
-It should be production ready if you want to try it out. 
-Some sort of admin section to create new tests, along with test stats and graphs, is in the works.
+
+Production ready if you want to try it out.
+Some sort of admin section to create tests, along with pretty pictures, stats, and graphs are in the works.
 You can manually load tests right now using the fixtures (see below).
 
 # Description:
@@ -42,9 +43,23 @@ The only submodule used is redis-node (https://github.com/bnoguchi/redis-node).
 
 # Load the sample data
 
-'test/fixtures.js' contains sample test data. To load them in your development environment:
+'scripts/load.js' features an interactive node app for loading or resetting tests and stats.
 
-	'node scripts/load_fixtures.js'
+In 'fixtures/' are files per environment which contains test data. 
+
+To load them in your development environment:
+
+	'node scripts/load.js'
+	
+To load them in your production environment:
+
+	'node scripts/load.js production'
+
+From there you can load the tests by either entering the test number or name to load:
+
+	test_name -r
+
+-r option resets the test and its stats in redis.
 
 # Stats
 
@@ -181,9 +196,4 @@ You'll probably want to host this on a different domain or sub-domain of your ap
 In addition, also point your webserver to the 'static/' directory so it handles serving the client api.
 
 # Performance
-
-From my testing using apache bench, most of the api calls to this application can handle between 1200-1400rps (tested on my MacBook Pro 2.4 GHz Core 2 Duo/2GB SDRAM).
-The stats api calls are a little lower since they require some multiple redis lookups to return all the keys for a test.
-
-
-
+Load testing on localhost varies between 1200-1400rps on average (when tested on a MacBook Pro Core Duo w/ 2GB/667MHz/SDRAM).
