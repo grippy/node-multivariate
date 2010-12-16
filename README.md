@@ -41,6 +41,20 @@ The only submodule used is redis-node (https://github.com/bnoguchi/redis-node).
 	    admin_port:9000
 	}
 
+Production also features an additional parameter for spawning a socket slave to serve requests from:
+
+	exports.production = {
+	    redis_db:0,
+	    redis_host:'127.0.0.1',
+	    redis_port:6379,
+	    app_port:8000,
+		app_slaves:2,
+	    admin_port:9000
+		
+	}
+
+The number of slaves can be equal to: # processor cores * # processors - 1 (main application listening on the port #)
+
 # Load the sample data
 
 'scripts/load.js' features an interactive node app for loading or resetting tests and stats.
@@ -55,11 +69,15 @@ To load them in your production environment:
 
 	'node scripts/load.js production'
 
-From there you can load the tests by either entering the test number or name to load:
+From there, you can load the tests by either entering the test number or name to load:
+
+	test_name
+
+This just saves the test metadata with the values from the fixture.
 
 	test_name -r
 
--r option resets the test and its stats in redis.
+-r option saves and resets the test along with its stats in redis.
 
 # Stats
 
