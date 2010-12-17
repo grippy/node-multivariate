@@ -111,9 +111,9 @@ This will autorestart the webserver for each file change. Useful if you plan on 
 
 	'node script/development.js'
 
-This is for production mode. The file watcher is turned off here. Memory footprint is really small (somewhere around 8MB)
+This is for production mode. The file watcher is turned off here. The memory footprint is really small (somewhere around 8MB). The production script below also creates a number of socket slaves (actual number defined in config).
 
-	'node app.js production'
+	'node script/production.js > log/production.log &'
 
 # Client Javascript
 
@@ -139,7 +139,6 @@ We want to create a new test identified with the following structure:
 
 	{
 		active:true,
-		key:'/s/domain.com/p/t/page_test',
 		name:'page_test',
 		site:'domain.com',
 		type:'p',
