@@ -144,15 +144,12 @@ We want to create a new test identified with the following structure:
 		site:'domain.com',
 		type:'p',
 		variants:'a,b',
-		distribution:'80,20',
-		dates:'',
-		events:'',
-		spread:'aaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaab'
+		distribution:'80,20'
 	}
 
 This is a simple a/b test with an 80/20 split. In theory, you could make this a,b,c,d. Until the admin exists you need to figure out the spread manually. Make sure the spread length is equal to 100 characters.
 
-For now, modify test/fixtures.js and add another test. You can then modify load_fixtures.js to load it.
+For now, modify fixtures/development.js and add another test. You can then modify run 'scripts/load.js' to load it.
 
 Now that we have a page test created... It's time to plug this into your app controller.
 
@@ -215,3 +212,5 @@ In addition, also point your webserver to the 'static/' directory so it handles 
 
 # Performance
 Load testing on localhost varies between 1200-1400rps on average (when tested on a MacBook Pro Core Duo w/ 2GB/667MHz/SDRAM).
+In a production environment it'll probably be way lower.
+Let me know what you discover.
