@@ -1,0 +1,28 @@
+<h1><%=test.key%></h1>
+<strong>name:</strong> <%=test.name%><br />
+<strong>type:</strong> <%=test.type_name()%><br />
+<strong>active:</strong> <%=test.active%><br />
+<strong>distribution:</strong> <%=test.distribution%><br />
+<strong>variants:</strong> <%=test.variants%><br />
+<strong>spread:</strong> <%=test.spread%><br />
+<%if (test.type=='f') {%>
+<strong>steps:</strong> <%=test.steps%><br />
+<%}%>
+<strong>dates:</strong> 
+<%if (test.dates){%>
+	<%=test.dates.split(',').forEach(function(s){
+		print(test.format_epoch(s) + ', ')
+	})%>
+<%}%>
+<br />
+
+<strong>events:</strong> 
+<%if (test.events){%>
+	<%=test.events.split(',').forEach(function(s){
+		print(test.format_epoch(s) + ', ')
+	})%>
+<%}%>
+<br />
+<hr />
+<h2>Stats</h2>
+<%=this.inspect(stats).replace(/\n/g, '<br />')%>

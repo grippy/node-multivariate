@@ -1,20 +1,18 @@
 # Still in development...
 
 This is still in development mode (hence no tag exists with a version number). 
-
-Production ready if you want to try it out.
-Some sort of admin section to create tests, along with pretty pictures, stats, and graphs are in the works.
+It is production ready if you want to try it out.
 You can manually load tests right now using the fixtures (see below).
 
-# Description:
+# Description
 
-This simple testing framework hopes to make a/b or multivariate webpage testing manageable.
-It also allows for event tracking and bucket tracking.
+This simple framework hopes to make a/b or multivariate webpage testing manageable.
+It also allows for event and bucket tracking.
 See below for a description of the different testing types and how to integrate them.
 
 # Installation
 
-This application has been tested on node 2.x and Redis 2.x.
+This application has been tested on node 2.x and redis 2.x.
 
 	git clone git://github.com/grippy/node-multivariate.git
 	git submodule init
@@ -79,24 +77,6 @@ This just saves the test metadata with the values from the fixture.
 
 -r option saves and resets the test along with its stats in redis.
 
-# Stats
-
-To view the stats for a particular test:
-
-	http://localhost:8000/stats/test/:test_key
-
-All tests aggregate by date the variant and event totals. In addition, funnel tests also aggregate the step numbers, too.
-
-For example, if you want to view the stats from one of the fixtures:
-
-	http://localhost:8000/stats/test/s/domain.com/p/t/page_test
-
-To view the stats for a particular bucket:
-
-	http://localhost:8000/stats/bucket/:bucket_key
-
-(These routes will eventually migrate to the admin app when it's ready.)
-
 # Testing the application
 
 To run the test suite, fire up:
@@ -114,6 +94,42 @@ This will autorestart the webserver for each file change. Useful if you plan on 
 This is for production mode. The file watcher is turned off here. The memory footprint is really small (somewhere around 8MB). The production script below also creates a number of socket slaves (actual number defined in config).
 
 	'node script/production.js > log/production.log &'
+	
+The above command will start a daemon process but it will eventually die with no reason. 
+You'll most likely want to start/stop using Upstart and then watch the process with Monit to make it bulletproof.
+For examples on how to do this, see 'config/upstart-production.conf' and 'config/monit-production.conf'.
+
+# Stats API
+
+To view the stats for a particular test:
+
+	http://localhost:8000/stats/test/:test_key
+
+All tests aggregate by date the variant and event totals. In addition, funnel tests also aggregate the step numbers, too.
+
+For example, if you want to view the stats from one of the fixtures:
+
+	http://localhost:8000/stats/test/s/domain.com/p/t/page_test
+
+To view the stats for a particular bucket:
+
+	http://localhost:8000/stats/bucket/:bucket_key
+
+(These routes will eventually migrate to the admin app when it's ready.)
+
+# Admin application
+
+The admin application is really sparse at the moment.
+It only loads in development mode lists all the possible tests or bucket keys stored in redis.
+The stats pages then make a call to the main server api to return the data.
+
+To fire it up:
+	
+	'node admin/scripts/development.js'
+
+With the default, admin config parameters, you can view it here:
+
+	'http://localhost:9000/admin'
 
 # Client Javascript
 
@@ -148,7 +164,7 @@ We want to create a new test identified with the following structure:
 
 This is a simple a/b test with an 80/20 split. In theory, you could make this a,b,c,d. Until the admin exists you need to figure out the spread manually. Make sure the spread length is equal to 100 characters.
 
-For now, modify fixtures/development.js and add another test. You can then modify run 'scripts/load.js' to load it.
+For now, modify fixtures/development.js and add another test. You can then run 'scripts/load.js' to load it.
 
 Now that we have a page test created... It's time to plug this into your app controller.
 
@@ -211,5 +227,4 @@ In addition, also point your webserver to the 'static/' directory so it handles 
 
 # Performance
 Load testing on localhost varies between 1200-1400rps on average (when tested on a MacBook Pro Core Duo w/ 2GB/667MHz/SDRAM).
-In a production environment it'll probably be way lower.
 Let me know what you discover.

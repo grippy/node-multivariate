@@ -1,0 +1,21 @@
+<h4>Module Tests</h4>
+<%for (var i=0,ii=module_keys.length; i < ii;i++){%>
+	<a href="/admin/stats/test<%=module_keys[i]%>"><%=module_keys[i]%></a><br />
+<%}%>
+<hr />
+
+<h4>Page Tests</h4>
+<%for (var i=0,ii=page_keys.length; i < ii;i++){%>
+	<a href="/admin/stats/test<%=page_keys[i]%>"><%=page_keys[i]%></a><br />
+<%}%>
+<hr />
+
+<h4>Funnel Tests</h4>
+<%for (var i=0,ii=funnel_keys.length; i < ii;i++){%>
+	<a href="/admin/stats/test<%=funnel_keys[i]%>"><%=funnel_keys[i]%></a><br />
+<%}%>
+<hr />
+<h4>Buckets</h4>
+<%for (var i=0,ii=buckets.length; i < ii;i++){%>
+	<a href="/admin<%=buckets[i]%>"><%=buckets[i]%></a><br />
+<%}%>

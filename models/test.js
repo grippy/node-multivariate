@@ -23,6 +23,18 @@ Test.prototype = {
     
     init:function(){},
     
+    type_name:function(){
+        var s = ''
+        if (this.type=='m'){
+            s = 'module'
+        }else if(this.type=='p'){
+            s = 'page'
+        }else if(this.type=='f'){
+            s = 'funnel'
+        }
+        return s
+    },
+    
     // hash values contain string lists...
     set_unique_list_prop:function(key, val){
         val = val.toString();

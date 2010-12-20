@@ -2,11 +2,17 @@ var sys = require('sys')
 
 /* route class */
 function Route(name, path){
+    content_type = 'text/javascript'
+    if (arguments.length){
+        if (arguments[2] != undefined){
+            content_type = arguments[2];
+        }
+    }
 	this.name = name;
 	this.path = path;
 	this.tokens = [];
 	this.pattern = null;
-	this.content_type = 'text/javascript';
+	this.content_type = content_type;
 	this.regify()
 	return this;
 }

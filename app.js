@@ -205,5 +205,5 @@ if (config.env == 'development' || config.env == 'testing'){
     
     http_server.port = config.app_port
     http_server.listen(config.app_port);
-    sys.puts('=> Server listening on http://127.0.0.1:'+ http_server.port +' (pid:' + process.pid +')')    
+    sys.puts('=> Server listening on http://127.0.0.1:'+ http_server.port +' (pid:' + process.pid +')')
 }
