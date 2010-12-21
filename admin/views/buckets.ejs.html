@@ -1,0 +1,8 @@
+<h1><%=buckets_key%></h1>
+
+<h2>keys</h2>
+<%for (var i=0, ii=buckets_keys.length, b; i<ii;i++){
+	b = buckets_keys[i]%>
+	<a href="/admin/stats/bucket<%=site_key%>/b/<%=b%>"><%=b%></a><br />
+	
+<%}%>
