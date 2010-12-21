@@ -15,7 +15,8 @@ exports.tests = {
         site:'domain.com',
         type:'p',
         variants:'a,b',
-        distribution:'80,20'
+        distribution:'80,20',
+        spread:'aaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaab'
     },
     // funnel tests...
     funnel_test:{
@@ -26,5 +27,7 @@ exports.tests = {
         variants:'a,b',
         distribution:'80,20',
         steps:'page_1,page_2,page_3',
+        spread:'aaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaabaaaab'
+
     }
 }

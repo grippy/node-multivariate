@@ -115,12 +115,10 @@ To view the stats for a particular bucket:
 
 	http://localhost:8000/stats/bucket/:bucket_key
 
-(These routes will eventually migrate to the admin app when it's ready.)
-
 # Admin application
 
 The admin application is really sparse at the moment.
-It only loads in development mode lists all the possible tests or bucket keys stored in redis.
+It only loads in development mode and lists all the possible tests or bucket keys stored in redis.
 The stats pages then make a call to the main server api to return the data.
 
 To fire it up:
@@ -162,7 +160,7 @@ We want to create a new test identified with the following structure:
 		distribution:'80,20'
 	}
 
-This is a simple a/b test with an 80/20 split. In theory, you could make this a,b,c,d. Until the admin exists you need to figure out the spread manually. Make sure the spread length is equal to 100 characters.
+This is a simple a/b test with an 80/20 split. In theory, you could make this a,b,c,d. Make sure the spread length is equal to 100 characters.
 
 For now, modify fixtures/development.js and add another test. You can then run 'scripts/load.js' to load it.
 

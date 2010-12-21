@@ -67,10 +67,8 @@ for(var i=0; i < dir.length; i++){
                         fs.readFileSync('admin/views/' + fd).toString())
                         
     if(fd.indexOf('_')!=0){
-        puts('view')
         views[name] = tmpl;
     } else {
-        puts('partial')
         partials[name] = tmpl;
     }
     
@@ -140,7 +138,9 @@ function handler(req, res){
                     } else if (route.name == 'test_stats'){
                         test_stats(req, res, params)
                     } else if (route.name == 'bucket_stats'){
-                        // bucket_stats(req, res, params)
+                        bucket_stats(req, res, params)
+                    } else if (route.name == 'buckets'){
+                        buckets(req, res, params)
                     } else {
                         res.body('undefined route')
                         end(req, res)
@@ -169,9 +169,10 @@ function handler(req, res){
 /* helper functions */
 routes.routes = [
     new routes.Route('root', '/admin', 'text/html'), // login & cookie
-    new routes.Route('create_test', '/admin/create/test', 'text/html'),
+    // new routes.Route('create_test', '/admin/create/test', 'text/html'),
     new routes.Route('test_stats', '/admin/stats/test/:test_key*', 'text/html'), // page, module, or funnel stats by key
-    new routes.Route('bucket_stats', '/admin/stats/bucket/s/:site/b/:name', 'text/html'),
+    new routes.Route('bucket_stats', '/admin/stats/bucket/:bucket_key*', 'text/html'),
+    new routes.Route('buckets', '/admin/buckets/:buckets_key*', 'text/html')
 ]
 routes.finalize()
 

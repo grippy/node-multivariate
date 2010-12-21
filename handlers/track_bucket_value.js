@@ -22,9 +22,14 @@ function track_bucket_value(req, res, path, params){
             // save here and update cache
             redis.sadd(site_buckets_key, params.name)
             bucket_members.push(params.name)
+            bucket_members_cache[site_buckets_key] = bucket_members
+        } else {
+            puts('here')
         }
     } else {
         Step(
+            
+            
             function get_members(){
                 redis.smembers(site_buckets_key, this)
             },
@@ -33,6 +38,11 @@ function track_bucket_value(req, res, path, params){
                 members.forEach(function(m){
                     list.push(m.toString())
                 })
+                if(!list.contains(params.name)){
+                    // save here and update cache
+                    redis.sadd(site_buckets_key, params.name)
+                    list.push(params.name)
+                }
                 // inspect(list)
                 bucket_members_cache[site_buckets_key] = list;
             }

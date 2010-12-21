@@ -19,10 +19,10 @@
 <strong>events:</strong> 
 <%if (test.events){%>
 	<%=test.events.split(',').forEach(function(s){
-		print(test.format_epoch(s) + ', ')
+		print(s + ', ')
 	})%>
 <%}%>
 <br />
 <hr />
 <h2>Stats</h2>
-<%=this.inspect(stats).replace(/\n/g, '<br />')%>
+<%=this.inspect(stats)%>

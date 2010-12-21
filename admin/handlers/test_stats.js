@@ -17,7 +17,7 @@ function test_stats(req, res, params){
                         url:url
                     }
                     var body = views.test_stats.parse(env)
-                    var page = views.layout.parse({body:body, 'title':'stats'})
+                    var page = views.layout.parse({body:body, 'title': test.name + ' stats'})
                         res.body(page)
                         end(req, res)
                 
@@ -25,19 +25,5 @@ function test_stats(req, res, params){
                 }
             )
     })
-    
-    // Step(
-    //     function fetch(){
-    //         // redis.hgetall(test_key, this.parallel())
-    //         if (!helper.is_funnel_test(test_key)){
-    //             // redis.keys(test_key + '*', this.parallel())
-    //         } else {
-    //             // redis.keys(test_key + '/step/*', this.parallel())
-    //         }
-    //     },
-    //     function render(err, results){
-    //         // res.body(JSON.stringify(sums))
-    //         end(req, res)        
-    //     }
-    // )
+
 }

@@ -22,7 +22,8 @@ Template.prototype = {
 		this.generate();
 	},
 	inspect:function(o){
-        return sys.inspect(o, false, null)
+        var s = sys.inspect(o, false, null)
+        return s.replace(/\n/g,'<br />')
 	},
 	partial:function(name){
 		if (name.indexOf('_') != 0){name = '_' + name;}
