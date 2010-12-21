@@ -23,9 +23,7 @@ function track_bucket_value(req, res, path, params){
             redis.sadd(site_buckets_key, params.name)
             bucket_members.push(params.name)
             bucket_members_cache[site_buckets_key] = bucket_members
-        } else {
-            puts('here')
-        }
+        } 
     } else {
         Step(
             
