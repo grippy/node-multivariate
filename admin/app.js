@@ -41,7 +41,7 @@ function watch_files(){
 // http client
 var multivar_server = http.createClient(config.app_port, 'localhost');
 function get(url, cb){
-    puts(url)
+    // puts(url)
     var request = multivar_server.request('GET', url, {'host': 'localhost'});
     request.end()
     request.on('response', function(response) {
@@ -59,7 +59,7 @@ var views = {}, partials = {};
 var dir = fs.readdirSync('./admin/views'), fd, parts, name, tmpl;
 for(var i=0; i < dir.length; i++){
     fd=dir[i]
-    puts(fd)
+    // puts(fd)
     parts = fd.split('.')
     name = parts[0]
     tmpl = new Template(name, 
@@ -166,11 +166,8 @@ function handler(req, res){
     
 }
 
-
-
-
 /*////////////////////////////////////////////////////////////////////////////////*/
-/* helper functions */
+/* routes */
 routes.routes = [
     new routes.Route('root', '/admin', 'text/html'), // login & cookie
     // new routes.Route('create_test', '/admin/create/test', 'text/html'),
@@ -183,17 +180,13 @@ routes.finalize()
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* load the static js file */
 var client_js = '', favicon='';
-
-
 if (config.env == 'development') {
-    /* restart on file change... */
-    watch_files()
+    watch_files() /* restart on file change... */
 }
 
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* local ref to the redis client */
 var redis = config.redis
-
 
 var http_server = http.createServer(function(req, res){
     handler(req, res)
