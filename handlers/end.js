@@ -21,14 +21,12 @@ function end(req, res){
     
     var body = res._body.join('')
     var length = body.length
-
+    
     res.header['Content-Length'] = length;
     res.writeHead(res.status_code, res.header);
     res.write(body)
     res.end()
-
-    // inspect(req)
-
+    
 }
 
 function bit_to_mb(v){

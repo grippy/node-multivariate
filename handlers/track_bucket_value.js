@@ -5,6 +5,9 @@ function track_bucket_value(req, res, path, params){
     // kill the response now...
     end(req, res)
     
+    // make sure we have a value to track here...
+    if (params.value.length == 0){return null}
+    
     var test_key = path
     var epoch = helper.epoch()
     var bucket_date_key = test_key + '/' + epoch.toString()
