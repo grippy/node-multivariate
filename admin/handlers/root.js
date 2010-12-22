@@ -18,7 +18,6 @@ function root(req, res){
                 key = results[i]
                 // puts(key)
                 if (module_test_re.test(key)){
-                    puts('module')
                     module_keys.push(key)
                 } else if (page_test_re.test(key)) {
                     page_keys.push(key)
