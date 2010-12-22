@@ -16,7 +16,7 @@ function root(req, res){
             results.sort()
             for(var i=0, ii=results.length, key; i < ii; i++){
                 key = results[i]
-                puts(key)
+                // puts(key)
                 if (module_test_re.test(key)){
                     puts('module')
                     module_keys.push(key)

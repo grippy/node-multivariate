@@ -106,9 +106,13 @@ function handler(req, res){
                 var uri = url.parse(req.url),
                     path = uri.pathname,
                     params = (uri.query != undefined) ? qs.parse(uri.query) : {};
-    
-                // static hook for the client api when no web server is used
-                // this is only loaded in dev mode...
+                
+                // heartbeat for production...
+                if (path == '/heartbeat'){
+                    res.header['Content-Type'] = 'text/html'
+                    res.body('')
+                    end(req, res)
+                }
                 if (path == '/favicon.ico') {
                     res.header['Content-Type'] = 'image/vnd.microsoft.icon'
                     res.body('')
