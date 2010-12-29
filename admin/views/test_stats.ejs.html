@@ -33,7 +33,7 @@
 <hr />
 <%//=this.inspect(stats)%>
 
-<h4>Total Variants Stats</h4>
+<h4>Total Variant Stats</h4>
 <table width="100%">
 <%for(var i=0, ii=stats.variants.length;i<ii;i++){%>
 	<tr>
@@ -110,21 +110,14 @@
 <%}%>
 	
 	//Style object for chart
-	var style_def = {
-		xAxis:{labelRotation:-90},
-		yAxis:{titleRotation:-90}
-	}
-
+	var style_def = {xAxis:{labelRotation:-45},yAxis:{titleRotation:-90}}
 
 	//Numeric Axis for our currency
 	var xAxis = new YAHOO.widget.CategoryAxis();
-	// xAxis.stackingEnabled = true;
 	xAxis.title = "Date";
 
 	var yAxis = new YAHOO.widget.NumericAxis();
 	yAxis.title = "Count"
-	// yAxis.stackingEnabled = true;
-	// yAxis.labelFunction = YAHOO.example.numberToCurrency;
 
 	var mychart = new YAHOO.widget.ColumnChart( "chart", data_source,
 	{
@@ -137,25 +130,65 @@
 		//only needed for flash player express install
 		expressInstall: "assets/expressinstall.swf"
 	});
-
-
-
-	// var mychart = new YAHOO.widget.StackedColumnChart( "chart", data,
-	// {
-	// 	series: series_def,
-	// 	// yField: "year",
-	// 	xField: "mv_date",
-	// 	yAxis: yAxis,
-	// 	xAxis: xAxis,
-	// 	// yAxis: currencyAxis,
-	// 	//only needed for flash player express install
-	// 	expressInstall: "assets/expressinstall.swf"
-	// });
-
 </script>
 
-<h4>Total Events</h4>
-todo...
+<h4>Total Event Stats</h4>
+
+<table width="100%">
+<%for(var i=0, ii=stats.events.length;i<ii;i++){%>
+	<tr>
+		<td><strong><%=stats.events[i]%></strong></td>
+		<td align="center"><%=stats.event_totals[stats.events[i]]%></td>
+	</tr>
+<%}%>
+</table>
 
 <h4>Event Stats by Date</h4>
-todo...
+<div id="chart_events">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+<script type="text/javascript">
+//--- data
+	var data = [], date, part, parts, field_obj={}
+	for(var i=0, ii=stats.dates.length; i < ii; i++){
+		date = stats.dates[i]
+		part = {'mv_date': date}
+		parts = stats.event_dates[date]
+
+		for(var p in parts){
+			part[p] = parts[p]
+			field_obj[p] = p
+		}
+		data.push(part)
+	}
+	
+	var fields=[], series_def=[];
+	for(var p in field_obj){
+		fields.push(p)
+		series_def.push({
+			displayName: p,
+			yField: p,
+			style:{size:10}
+		})
+	}
+	fields = [ "mv_date" ].concat(fields)
+	var data_source = new YAHOO.util.DataSource( data );
+	data_source.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	data_source.responseSchema = {fields: fields};
+
+	//Numeric Axis for our currency
+	var xAxis = new YAHOO.widget.CategoryAxis();
+	xAxis.title = "Date";
+
+	var yAxis = new YAHOO.widget.NumericAxis();
+	yAxis.title = "Count"
+
+	var mychart = new YAHOO.widget.ColumnChart( "chart_events", data_source,
+	{
+		series: series_def,
+		xField: "mv_date",
+		yAxis: yAxis,
+		xAxis: xAxis,
+		style: style_def,
+		expressInstall: "assets/expressinstall.swf"
+	});
+</script>
+
