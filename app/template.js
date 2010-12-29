@@ -25,6 +25,9 @@ Template.prototype = {
         var s = sys.inspect(o, false, null)
         return s.replace(/\n/g,'<br />')
 	},
+	to_json:function(o){
+        return JSON.stringify(o)
+	},
 	partial:function(name){
 		if (name.indexOf('_') != 0){name = '_' + name;}
 		var tmpl = this.partials[name]

@@ -1,3 +1,10 @@
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/json/json-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/element/element-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/swf/swf-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/charts/charts-min.js"></script>
+
 <h1><%=test.key%></h1>
 <strong>name:</strong> <%=test.name%><br />
 <strong>type:</strong> <%=test.type_name()%><br />
@@ -24,5 +31,124 @@
 <%}%>
 <br />
 <hr />
-<h2>Stats</h2>
-<%=this.inspect(stats)%>
+<%//=this.inspect(stats)%>
+
+<h4>Total Variants Stats</h4>
+<table width="100%">
+<%for(var i=0, ii=stats.variants.length;i<ii;i++){%>
+	<tr>
+		<td><strong><%=stats.variants[i]%></strong></td>
+		<td align="center"><%=stats.variant_totals[stats.variants[i]]%></td>
+	</tr>
+<%}%>
+</table>
+
+<h4>Stats By Date</h4>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "http://yui.yahooapis.com/2.8.2r1/build/charts/assets/charts.swf";
+
+	var stats = <%=this.to_json(stats)%>
+	
+//--- data
+	var data = [], date, part, parts
+	for(var i=0, ii=stats.dates.length; i < ii; i++){
+		date = stats.dates[i]
+		part = {'mv_date': date}
+		parts = stats.variant_dates[date]
+
+		for(var p in parts){
+			part[p] = parts[p]
+		}
+		data.push(part)
+	}
+	
+<%if (test.type=='f') {%>
+	var step_variants=[], s, v
+	for(var i=0; i < stats.steps.length; i++){
+		s = stats.steps[i];
+		for(var j=0; j < stats.variants.length; j++){
+			v = stats.variants[j];
+			step_variants.push(s + '/' + v)
+		}
+	}
+	
+	var fields = [ "mv_date" ].concat(step_variants)
+	var data_source = new YAHOO.util.DataSource( data );
+	data_source.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	data_source.responseSchema = {fields: fields};
+
+//--- chart
+	var series_def = [], name
+	for(var i=0; i < step_variants.length;i++){
+		var name = step_variants[i]
+		series_def.push({
+			displayName: name,
+			yField: name,
+			style:{size:10}
+		})
+		
+	}
+<%} else {%>
+
+	var fields = [ "mv_date" ].concat(stats.variants)
+	var data_source = new YAHOO.util.DataSource( data );
+	data_source.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	data_source.responseSchema = {fields: fields};
+
+	var series_def = [], v;
+	for(var i=0; i < stats.variants.length; i++){
+		v = stats.variants[i];
+		series_def.push({
+			displayName: v,
+			yField: v,
+			style:{size:10}
+		})
+	}
+	
+<%}%>
+	
+	//Style object for chart
+	var style_def = {
+		xAxis:{labelRotation:-90},
+		yAxis:{titleRotation:-90}
+	}
+
+
+	//Numeric Axis for our currency
+	var xAxis = new YAHOO.widget.CategoryAxis();
+	// xAxis.stackingEnabled = true;
+	xAxis.title = "Date";
+
+	var yAxis = new YAHOO.widget.NumericAxis();
+	yAxis.stackingEnabled = true;
+	// yAxis.labelFunction = YAHOO.example.numberToCurrency;
+
+	var mychart = new YAHOO.widget.ColumnChart( "chart", data_source,
+	{
+		series: series_def,
+		xField: "mv_date",
+		yAxis: yAxis,
+		xAxis: xAxis,
+		style: style_def,
+		// dataTipFunction: tooltip,
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+
+
+
+	// var mychart = new YAHOO.widget.StackedColumnChart( "chart", data,
+	// {
+	// 	series: series_def,
+	// 	// yField: "year",
+	// 	xField: "mv_date",
+	// 	yAxis: yAxis,
+	// 	xAxis: xAxis,
+	// 	// yAxis: currencyAxis,
+	// 	//only needed for flash player express install
+	// 	expressInstall: "assets/expressinstall.swf"
+	// });
+
+</script>

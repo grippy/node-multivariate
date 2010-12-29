@@ -1,2 +1,84 @@
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/json/json-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/element/element-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/swf/swf-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/charts/charts-min.js"></script>
 <h1><a href="/admin/buckets<%=buckets_key%>">buckets</a>: <%=bucket_key%></h1>
-<%=this.inspect(stats)%>
+<%//=this.inspect(stats)%>
+
+<h4>Total Stats</h4>
+<table width="100%">
+<%for(var i=0, ii=stats.names.length;i<ii;i++){%>
+	<tr>
+		<td><strong><%=stats.names[i]%></strong></td>
+		<td align="center"><%=stats.name_totals[stats.names[i]]%></td>
+	</tr>
+<%}%>
+</table>
+<h4>Stats By Date</h4>
+<div id="chart" class="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+<script type="text/javascript">
+	YAHOO.widget.Chart.SWFURL = "http://yui.yahooapis.com/2.8.2r1/build/charts/assets/charts.swf";
+	var stats = <%=this.to_json(stats)%>
+	
+//--- data
+	var data = [], date, part, parts
+	for(var i=0, ii=stats.dates.length; i < ii; i++){
+		date = stats.dates[i]
+		part = {'mv_date': date}
+		parts = stats.date_totals[date]
+		for(var p in parts){
+			part[p] = parts[p]
+		}
+		data.push(part)
+	}
+	
+	var fields = [ "mv_date" ].concat(stats.names)
+	var data_source = new YAHOO.util.DataSource( data );
+	data_source.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	data_source.responseSchema = {fields: fields};
+
+//--- chart
+	var series_def = [], name
+	for(var i=0; i < stats.names.length;i++){
+		var name = stats.names[i]
+		series_def.push({
+			displayName: name,
+			yField: name,
+			style:{size:10}
+		})
+		
+	}
+	//Style object for chart
+	var style_def = {
+		xAxis:{labelRotation:-90},
+		yAxis:{titleRotation:-90}
+	}
+	//DataTip function for the chart
+	var tooltip = function( item, index, series ) {
+		var toolTipText = item[series.yField] + ' ' + series.displayName + " on " + item.mv_date
+		return toolTipText;
+	}
+	// create y-axis label
+	var yAxis = new YAHOO.widget.NumericAxis();
+	yAxis.title = "Count";
+
+	//create Category Axis to specify a title for the months
+	var xAxis = new YAHOO.widget.CategoryAxis();
+	xAxis.title = "Date";
+
+	//create a Chart
+	var mychart = new YAHOO.widget.ColumnChart( "chart", data_source,
+	{
+		series: series_def,
+		xField: "mv_date",
+		yAxis: yAxis,
+		xAxis: xAxis,
+		style: style_def,
+		dataTipFunction: tooltip,
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+
+</script>

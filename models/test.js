@@ -258,15 +258,15 @@ Test.prototype = {
         var v_key, e_key, d_key;
         var v_val, e_val, d_val;
         var val;
-        var v_totals = {}
-        var v_dates = [], v_date, v_date_temp;
+        var v_totals = {};
+        var v_dates = {};
         
-        var e_totals = {}
-        var e_dates = [], e_date, e_date_temp;
+        var e_totals = {};
+        var e_dates = {};
         
         var v_total=0, e_total=0; // total of each type
         var v, e, d;
-        
+        var variant_event_name;
         var date_formats = [], date_format;
         
         for(var i=0; i < variants.length; i++){
@@ -280,16 +280,22 @@ Test.prototype = {
                 d_key = v_key + '/' + dates[k];
                 val = this.get_stat_val(d_key)
                 
-                v_date = {}
-                v_date_temp = {}
-                v_date_temp[v] = val
+                // v_date = {}
+                // v_date_temp = {}
+                // v_date_temp[v] = val
                 date_format = this.format_epoch(d)
-                v_date[date_format] = v_date_temp
-                v_dates.push(v_date)
-                
+
                 v_totals[v] += val
-                v_total += val; 
+                v_total += val;
                 
+                if (v_dates[date_format] == undefined){
+                    v_dates[date_format] = {}
+                }            
+                if (v_dates[date_format][v] == undefined){
+                    v_dates[date_format][v] = 0
+                }            
+                v_dates[date_format][v] += val
+
                 if (date_formats.toString().indexOf(date_format) == -1) {
                     date_formats.push(date_format)
                 }
@@ -299,20 +305,22 @@ Test.prototype = {
             for(var j=0; j < events.length; j++){
                 e = events[j];
                 e_key = v_key + '/e/' + e
-                if (e_totals[e] == undefined) e_totals[e] = 0;
                 for(var k=0; k < dates.length; k++){
                     d = dates[k];
                     d_key = e_key + '/' + dates[k]
                     val = this.get_stat_val(d_key)
-                    
-                    e_date = {};
-                    e_date_temp = {};
-                    e_date_temp[v + '/' + e] = val;
-                    e_date[this.format_epoch(d)] = e_date_temp;
-                    e_dates.push(e_date);
-                    
-                    e_totals[e] += val;
-                    e_total += val;
+                    variant_event_name = v + '/' + e
+                    date_format = this.format_epoch(d)
+                    if (e_totals[variant_event_name]==undefined && val > 0){
+                        e_totals[variant_event_name]=0
+                    }
+                    if(val > 0) e_totals[variant_event_name] += val
+                    e_total += val
+                    if (e_dates[date_format] == undefined){
+                        e_dates[date_format] = {}
+                    }
+                    // only add if we have a value (keeps response minimal)
+                    if (val>0) e_dates[date_format][variant_event_name] = val
                 }
             }
         }
@@ -336,7 +344,9 @@ Test.prototype = {
             event_total:e_total,
             event_totals:e_totals,
             event_dates:e_dates,
-            dates:date_formats
+            dates:date_formats,
+            variants:this.variants.split(','),
+            events:(this.events) ? this.events.split(',') : []
         }
     },
     
@@ -363,6 +373,7 @@ Test.prototype = {
         
         var v_total=0, e_total=0; // total of each type
         var v, e, d;
+        var s_totals={}; // step totals (variant sum)
         var date_formats = [], date_format;
         
         var event_params = []
@@ -424,6 +435,7 @@ Test.prototype = {
             e_date[param.step + '/' + param.variant + '/' + param.event_name] = param.count;
             e_dates[param.date] = e_date
             
+
         }
 
         for(var i=0; i < variant_params.length; i++){
@@ -441,13 +453,18 @@ Test.prototype = {
             v_date = v_dates[param.date];
             v_date[param.step + '/' + param.variant] = param.count;
             v_dates[param.date] = v_date
+
+            if (s_totals[param.step] == undefined){
+                s_totals[param.step] = 0
+            }            
+            s_totals[param.step] += param.count
             
         }
         return {
             variant_total:v_total,
             variant_totals:v_totals,
             variant_dates:v_dates,
-            
+            step_totals:s_totals,
             event_total:e_total,
             event_totals:e_totals,
             event_dates:e_dates,

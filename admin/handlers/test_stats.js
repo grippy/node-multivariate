@@ -1,7 +1,7 @@
 function test_stats(req, res, params){
     var test_key = '/' + params.test_key
     var url = '/stats/test'+ test_key
-    puts(test_key)
+    // puts(test_key)
     // fetch the json stats for this key...
     get(url, function(results){
             Step(function test_metadata(){
@@ -20,8 +20,6 @@ function test_stats(req, res, params){
                     var page = views.layout.parse({body:body, 'title': test.name + ' stats'})
                         res.body(page)
                         end(req, res)
-                
-                
                 }
             )
     })

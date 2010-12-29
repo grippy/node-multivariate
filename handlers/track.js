@@ -14,6 +14,9 @@ function track(req, res, path){
         event_name = parts[1].split('/e/')[1];
     }
     
+    
+    
+    
     Step(
       // Loads two files in parallel
       function lookup_test() {

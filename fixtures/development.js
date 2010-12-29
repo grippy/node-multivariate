@@ -6,7 +6,9 @@ exports.tests = {
         site:'domain.com',
         type:'m',
         variants:'a,b',
-        distribution:'50,50'
+        distribution:'50,50',
+        spread:'abababababababababababababababababababababababababababababababababababababababababababababababababab'
+
     },
     // page tests...
     page_test:{

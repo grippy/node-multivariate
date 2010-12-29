@@ -5,6 +5,9 @@
 			<%=title%>
 		<%}%>
 		</title>
+		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.2r1/build/fonts/fonts-min.css" />
+		
+		
 		<style type="text/css">
 			h1{font-size:138.5%;}h2{font-size:123.1%;}h3{font-size:108%;}h1,h2,h3{margin:1em 0;}h1,h2,h3,h4,h5,h6,strong{font-weight:bold;}abbr,acronym{border-bottom:1px dotted #000;cursor:help;} em{font-style:italic;}blockquote,ul,ol,dl{margin:1em;}ol,ul,dl{margin-left:2em;}ol li{list-style:decimal outside;}ul li{list-style:disc outside;}dl dd{margin-left:1em;}th,td{border:1px solid #000;padding:.5em;}th{font-weight:bold;text-align:center;}caption{margin-bottom:.5em;text-align:center;}p,fieldset,table,pre{margin-bottom:1em;}input[type=text],input[type=password],textarea{width:12.25em;*width:11.9em;}
 
@@ -16,7 +19,7 @@
 			#hdr a {text-decoration:none;}
 
 			.big {font-size:138.5%; font-weight:bold;}
-
+			td {border:1px #ddd solid;}
 			/* h1 span, h2 span, p span, li span {background:#333; color:#08f; padding:5px;} */
 
 			ul {list-style-type: none; margin:0px;}
@@ -29,11 +32,14 @@
 
 			.msg {padding:5px; font-size:125%; margin:5px 0;}
 			.info {border:3px solid green; background:#9f9}
-			.error {border:3px solid red; background:#F9B2B2}		
+			.error {border:3px solid red; background:#F9B2B2}
+			
+			.chart {width:100%; height:400px;}
+			
 		</style>
 		
 	</head>
-	<body>
+	<body class="yui-skin-sam">
 		<%=this.partial('header')%>
 		<%=body%>
 	</body>

@@ -41,7 +41,6 @@ function start_testing(){
         }, 
         function flush_testing_db_callback(err, result){
             if (err) error(err);
-            
             assert.ok(result)
             return true
         },
@@ -57,13 +56,12 @@ function start_testing(){
         },
         function create_page_test_callback(err, result){
             if (err) error(err);
-
             assert.ok(result)
             return true
         },
         
         // test page
-        function page_test(err, prev){
+        function test_page_test(err, prev){
             if (err) error(err);
             puts('=> page_test')
             redis.hgetall(page_test.key, this)
@@ -87,7 +85,7 @@ function start_testing(){
                 // validate the api response
                 var r = JSON.parse(chunk.toString())
                 assert.equal(r.name, 'page_test')
-                assert.equal(r.variant, 'a')
+                assert.equal(r.variant, 'b')
                 assert.equal(r.type, 'p')
                 
                 // fire off some test requests...
@@ -122,15 +120,21 @@ function start_testing(){
                      stats = JSON.parse(stats)
                      puts('=> page test stats')
                      inspect(stats)
+                     var date = stats.dates[0]
                      assert.equal(stats.variant_total, 50)
-                     assert.equal(stats.variant_totals.a, 40)
-                     assert.equal(stats.variant_totals.b, 10)
+                     assert.equal(stats.variant_totals.a, 25)
+                     assert.equal(stats.variant_totals.b, 25)
                      assert.equal(stats.event_total, 88)
-                     assert.equal(stats.event_totals.whatevs, 69)
-                     assert.equal(stats.event_totals.foreals, 19)
+                     assert.equal(stats.event_totals['a/whatevs'], 69)
+                     assert.equal(stats.event_totals['b/foreals'], 19)
+                     assert.equal(stats.variant_dates[date]['a'], 25)
+                     assert.equal(stats.variant_dates[date]['b'], 25)
+                     assert.equal(stats.event_dates[date]['a/whatevs'], 69)
+                     assert.equal(stats.event_dates[date]['b/foreals'], 19)
+                     
                      return true
                  },
-                 
+        
         // create module
         function create_module_test(err, prev){
             if (err) error(err);
@@ -147,7 +151,7 @@ function start_testing(){
         },
         
         // test module...
-        function module_test(err, prev){
+        function test_module_test(err, prev){
             if (err) error(err);
             puts('=> module_test')
             // was this model saved?
@@ -208,12 +212,17 @@ function start_testing(){
                      stats = JSON.parse(stats)
                      puts('=> module test stats')
                      inspect(stats)
+                     var date = stats.dates[0]
                      assert.equal(stats.variant_total, 50)
                      assert.equal(stats.variant_totals.a, 25)
                      assert.equal(stats.variant_totals.b, 25)
                      assert.equal(stats.event_total, 146)
-                     assert.equal(stats.event_totals.whatevs, 101)
-                     assert.equal(stats.event_totals.foreals, 45)
+                     assert.equal(stats.event_totals['a/whatevs'], 101)
+                     assert.equal(stats.event_totals['b/foreals'], 45)
+                     assert.equal(stats.variant_dates[date]['a'], 25)
+                     assert.equal(stats.variant_dates[date]['b'], 25)
+                     assert.equal(stats.event_dates[date]['a/whatevs'], 101)
+                     assert.equal(stats.event_dates[date]['b/foreals'], 45)
                      return true
                  },
 
@@ -233,9 +242,8 @@ function start_testing(){
         },
         
         // test page
-        function funnel_test(err, prev){
+        function test_funnel_test(err, prev){
             if (err) error(err);
-
             puts('=> funnel_test')
             redis.hgetall(funnel_test.key, this)
         },
@@ -245,7 +253,7 @@ function start_testing(){
             assert.equal(test.name, 'funnel_test')
             return true
         },
-
+        
         // funnel_test_api 
         function funnel_test_api(err, prev){
             if (err) error(err);
@@ -377,12 +385,16 @@ function start_testing(){
                     stats = JSON.parse(stats)
                     puts('=> funnel test stats')
                     inspect(stats)
-                    // assert.equal(stats.variant_total, 50)
-                    // assert.equal(stats.variant_totals.a, 25)
-                    // assert.equal(stats.variant_totals.b, 25)
-                    // assert.equal(stats.event_total, 146)
-                    // assert.equal(stats.event_totals.whatevs, 101)
-                    // assert.equal(stats.event_totals.foreals, 45)
+                    var date = stats.dates[0]
+                    // puts(date)
+                    assert.equal(stats.variant_total, 105)
+                    assert.equal(stats.variant_totals.a, 71)
+                    assert.equal(stats.variant_totals.b, 34)
+                    assert.equal(stats.event_total, 242)
+                    assert.equal(stats.event_totals.whatevs, 164)
+                    assert.equal(stats.event_totals.foreals, 78)
+                    assert.equal(stats.variant_dates[date]['page_1/a'], 35)
+                    assert.equal(stats.event_dates[date]['page_1/a/whatevs'], 101)
                     return true
                 
                 
@@ -422,25 +434,19 @@ function start_testing(){
                  stats = JSON.parse(stats)
                  puts('=> bucket stats')
                  inspect(stats)
-                 
                  var bucket = new model.Bucket()
                  var date = bucket.format_epoch(helper.epoch())
                  // puts(date)
-                 assert.equal(stats[key('monday', date)], 25)
-                 assert.equal(stats[key('tuesday', date)], 34)
-                 assert.equal(stats[key('wednesday', date)], 22)
-                 assert.equal(stats[key('thursday', date)], 3)
-                 assert.equal(stats[key('friday', date)], 13)
-                 assert.equal(stats[key('saturday', date)], 77)
-                 assert.equal(stats[key('sunday', date)], 9)
-
+                 assert.equal(stats.date_totals[date]['monday'], 25)
+                 assert.equal(stats.date_totals[date]['tuesday'], 34)
+                 assert.equal(stats.date_totals[date]['wednesday'], 22)
+                 assert.equal(stats.date_totals[date]['thursday'], 3)
+                 assert.equal(stats.date_totals[date]['friday'], 13)
+                 assert.equal(stats.date_totals[date]['saturday'], 77)
+                 assert.equal(stats.date_totals[date]['sunday'], 9)
                  return true
              },
-
-             
              /* test user agent strings... */
-             
-             
              
         // kill
         function(err, result){
@@ -448,9 +454,7 @@ function start_testing(){
             process.kill(testing_app_pid)
             process.kill(process.pid)
         }
-        
-    )    
-    
+    )
 }
 
 function stop_testing(){
