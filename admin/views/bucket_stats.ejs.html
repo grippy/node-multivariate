@@ -56,10 +56,10 @@
 		yAxis:{titleRotation:-90}
 	}
 	//DataTip function for the chart
-	var tooltip = function( item, index, series ) {
-		var toolTipText = item[series.yField] + ' ' + series.displayName + " on " + item.mv_date
-		return toolTipText;
-	}
+	// var tooltip = function( item, index, series ) {
+	// 	var toolTipText = item[series.yField] + ' ' + series.displayName + " on " + item.mv_date
+	// 	return toolTipText;
+	// }
 	// create y-axis label
 	var yAxis = new YAHOO.widget.NumericAxis();
 	yAxis.title = "Count";
@@ -76,7 +76,7 @@
 		yAxis: yAxis,
 		xAxis: xAxis,
 		style: style_def,
-		dataTipFunction: tooltip,
+		// dataTipFunction: tooltip,
 		//only needed for flash player express install
 		expressInstall: "assets/expressinstall.swf"
 	});
