@@ -132,15 +132,15 @@
 	});
 </script>
 
+<%if (stats.events)%>
 <h4>Total Event Stats</h4>
-
 <table width="100%">
-<%for(var i=0, ii=stats.events.length;i<ii;i++){%>
+	<%for(var i=0, ii=stats.events.length;i<ii;i++){%>
 	<tr>
 		<td><strong><%=stats.events[i]%></strong></td>
 		<td align="center"><%=stats.event_totals[stats.events[i]]%></td>
 	</tr>
-<%}%>
+	<%}%>
 </table>
 
 <h4>Event Stats by Date</h4>
@@ -191,4 +191,9 @@
 		expressInstall: "assets/expressinstall.swf"
 	});
 </script>
+<%} else {%>
+<h4>Events</h4>
+<i>No events tracked</i>
+<%}%>
+
 
