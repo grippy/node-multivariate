@@ -31,7 +31,7 @@
 <%}%>
 <br />
 <hr />
-<%//=this.inspect(stats)%>
+<%=this.inspect(stats)%>
 
 <h4>Total Variant Stats</h4>
 <table width="100%">
@@ -136,10 +136,14 @@
 	<h4>Total Event Stats</h4>
 	<table width="100%">
 		<%for(var i=0, ii=stats.events.length;i<ii;i++){%>
-		<tr>
-			<td><strong><%=stats.events[i]%></strong></td>
-			<td align="center"><%=stats.event_totals[stats.events[i]]%></td>
-		</tr>
+			<%for(var j=0, jj=stats.variants.length;j<jj;j++){%>
+			<tr>
+				<td><strong><%=stats.variants[j]%>/<%=stats.events[i]%></strong></td>
+				<%var cnt = stats.event_totals[stats.variants[j] + '/' + stats.events[i]]%>
+			
+				<td align="center"><%=(cnt)? cnt : 0%></td>
+			</tr>
+			<%}%>
 		<%}%>
 	</table>
 
