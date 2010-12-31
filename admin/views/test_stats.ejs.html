@@ -6,15 +6,42 @@
 <script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/charts/charts-min.js"></script>
 
 <h1><%=test.key%></h1>
-<strong>name:</strong> <%=test.name%><br />
-<strong>type:</strong> <%=test.type_name()%><br />
-<strong>active:</strong> <%=test.active%><br />
-<strong>distribution:</strong> <%=test.distribution%><br />
-<strong>variants:</strong> <%=test.variants%><br />
-<strong>spread:</strong> <%=test.spread%><br />
+
+
+<h4>Test Properties</h4>
+<table width="100%">
+	<tr>
+		<td><strong>name</strong></td>
+		<td><%=test.name%></td>
+	</tr>
+	<tr>
+		<td><strong>type</strong></td>
+		<td><%=test.type_name()%></td>
+	</tr>
+	<tr>
+		<td><strong>active</strong></td>
+		<td> <%=test.active%></td>
+	</tr>
+	<tr>
+		<td><strong>distribution</strong></td>
+		<td><%=test.distribution%></td>
+	</tr>
+	<tr>
+		<td><strong>variants</strong></td>
+		<td><%=test.variants%></td>
+	</tr>
+	<tr>
+		<td><strong>spread</strong></td>
+		<td><%=test.spread%></td>
+	</tr>
 <%if (test.type=='f') {%>
-<strong>steps:</strong> <%=test.steps%><br />
+	<tr>
+		<td><strong>steps</strong></td>
+		<td><%=test.steps%></td>
+	</tr>
 <%}%>
+</table>
+<!--
 <strong>dates:</strong> 
 <%if (test.dates){%>
 	<%=test.dates.split(',').forEach(function(s){
@@ -30,7 +57,8 @@
 	})%>
 <%}%>
 <br />
-<hr />
+-->
+
 <%//=this.inspect(stats)%>
 
 <h4>Variant Stats</h4>
