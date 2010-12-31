@@ -33,23 +33,65 @@
 <hr />
 <%//=this.inspect(stats)%>
 
-<h4>Total Variant Stats</h4>
+<h4>Variant Stats</h4>
 <table width="100%">
+	<tr>
+		<th>Event</th>
+		<th>Count</th>
+	</tr>
 <%for(var i=0, ii=stats.variants.length;i<ii;i++){%>
 	<tr>
 		<td><strong><%=stats.variants[i]%></strong></td>
 		<td align="center"><%=stats.variant_totals[stats.variants[i]]%></td>
 	</tr>
 <%}%>
+	<tr>
+		<td style="background:#eee; text-align:right"><strong>Total</strong></td>
+		<td style="background:#eee" align="center"><%=stats.variant_total%></td>
+	</tr>
 </table>
-
-<h4>Stats By Date</h4>
-<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+<div id="chart_variant" class="chart"></div>
 <script type="text/javascript">
-
 	YAHOO.widget.Chart.SWFURL = "http://yui.yahooapis.com/2.8.2r1/build/charts/assets/charts.swf";
-
 	var stats = <%=this.to_json(stats)%>
+	var variant_data = [];
+	for(var p in stats.variant_totals) {
+		variant_data.push({'response':p, 'entries':stats.variant_totals[p]})
+	}
+	var variant_data_source = new YAHOO.util.DataSource( variant_data );
+	variant_data_source.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	variant_data_source.responseSchema = {fields: ["response", "entries"]};
+	//--- chart
+	var variant_chart = new YAHOO.widget.PieChart( "chart_variant", variant_data_source,
+	{
+		dataField: "entries",
+		categoryField: "response",
+		style:
+		{
+			padding: 20,
+			legend:
+			{
+				display: "right",
+				padding: 10,
+				spacing: 5,
+				font:
+				{
+					family: "Arial",
+					size: 13
+				}
+			}
+		} 
+	});
+</script>
+
+
+<h4>Variants By Date</h4>
+
+<!-- Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p> -->
+
+<div id="chart" class="chart"></div>
+
+<script type="text/javascript">
 	
 //--- data
 	var data = [], date, part, parts
@@ -110,7 +152,8 @@
 <%}%>
 	
 	//Style object for chart
-	var style_def = {xAxis:{labelRotation:-45},yAxis:{titleRotation:-90}}
+	var style_def = {xAxis:{labelRotation:-45},
+					 yAxis:{titleRotation:-90}}
 
 	//Numeric Axis for our currency
 	var xAxis = new YAHOO.widget.CategoryAxis();
@@ -119,7 +162,7 @@
 	var yAxis = new YAHOO.widget.NumericAxis();
 	yAxis.title = "Count"
 
-	var mychart = new YAHOO.widget.ColumnChart( "chart", data_source,
+	var mychart = new YAHOO.widget.LineChart( "chart", data_source,
 	{
 		series: series_def,
 		xField: "mv_date",
@@ -133,22 +176,31 @@
 </script>
 
 <%if (stats.events) {%>
-	<h4>Total Event Stats</h4>
+	<h4>Event Stats</h4>
 	<table width="100%">
-		<%for(var i=0, ii=stats.events.length;i<ii;i++){%>
-			<%for(var j=0, jj=stats.variants.length;j<jj;j++){%>
+		<tr>
+			<th>Event</th>
+			<th>Count</th>
+			<th>Conversion</th>
+		</tr>
+		<%var events = (test.type=='f') ? stats.step_variant_events : stats.variant_events %>
+		<%for(var i=0, ii=events.length; i < ii; i++){%>
+			<%var key = events[i]%>
 			<tr>
-				<td><strong><%=stats.variants[j]%>/<%=stats.events[i]%></strong></td>
-				<%var cnt = stats.event_totals[stats.variants[j] + '/' + stats.events[i]]%>
-			
-				<td align="center"><%=(cnt)? cnt : 0%></td>
+				<td><strong><%=key%></strong></td>
+				<td align="center"><%=stats.event_totals[key]%></td>
+				<td align="center"><%=stats.conversion_totals[key]%></td>
 			</tr>
-			<%}%>
 		<%}%>
+		<tr>
+			<td style="background:#eee; text-align:right"><strong>Total</strong></td>
+			<td style="background:#eee" align="center"><%=stats.event_total%></td>
+			<td style="background:#eee" align="center">&nbsp;</td>
+		</tr>
 	</table>
 
 	<h4>Event Stats by Date</h4>
-	<div id="chart_events">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+	<div id="chart_events" class="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
 	<script type="text/javascript">
 	//--- data
 		var data = [], date, part, parts, field_obj={}

@@ -245,7 +245,9 @@ Test.prototype = {
          return this.funnel_stat_sum()
       }
     },
-    
+    conversion_rate:function(ecnt, imp){
+        return parseFloat(((ecnt / imp) * 100).toFixed(2))
+    },
     page_stat_sum:function(){
         // aggregate all date stats for base key
         var test_key = this.key;
@@ -260,13 +262,13 @@ Test.prototype = {
         var val;
         var v_totals = {};
         var v_dates = {};
-        
+        var v_events=[];
         var e_totals = {};
         var e_dates = {};
-        
         var v_total=0, e_total=0; // total of each type
         var v, e, d;
         var variant_event_name;
+        var c_totals = {} // conversion totals
         var date_formats = [], date_format;
         
         for(var i=0; i < variants.length; i++){
@@ -314,7 +316,11 @@ Test.prototype = {
                     if (e_totals[variant_event_name]==undefined && val > 0){
                         e_totals[variant_event_name]=0
                     }
-                    if(val > 0) e_totals[variant_event_name] += val
+                    if(val > 0) {
+                        e_totals[variant_event_name] += val
+                        c_totals[variant_event_name] = this.conversion_rate(val, v_totals[v])
+                        v_events.push(variant_event_name)
+                    }
                     e_total += val
                     if (e_dates[date_format] == undefined){
                         e_dates[date_format] = {}
@@ -336,11 +342,14 @@ Test.prototype = {
         // sys.puts('---')
         // sys.puts(sys.inspect(date_formats))
         
+        
+        
         return {
             variant_total:v_total,
             variant_totals:v_totals,
             variant_dates:v_dates,
-            
+            variant_events:v_events,
+            conversion_totals:c_totals,
             event_total:e_total,
             event_totals:e_totals,
             event_dates:e_dates,
@@ -373,11 +382,15 @@ Test.prototype = {
         
         var v_total=0, e_total=0; // total of each type
         var v, e, d;
-        var s_totals={}; // step totals (variant sum)
+        var s_totals={}; // step totals (sum across all variants)
+        var sv_totals={}; // step variant totals (for each step/variant)
+        var sv_events = []
+        var c_totals = {} // conversion totals
         var date_formats = [], date_format;
         
         var event_params = []
         var variant_params = []
+        var step_variant, step_variant_event;
         
         for(var i=0; i < dates.length; i++){
             date_formats.push(this.format_epoch(parseInt(dates[i], 10)))
@@ -419,27 +432,10 @@ Test.prototype = {
                 }
             }
         }
-        
-        for(var i=0; i < event_params.length; i++){
-            param = event_params[i]
-            if (e_totals[param.event_name]==undefined){
-                e_totals[param.event_name]=0
-            }
-            e_totals[param.event_name] += param.count
-            e_total += param.count
-            
-            if (e_dates[param.date] == undefined){
-                e_dates[param.date] = {}
-            }
-            e_date = e_dates[param.date];
-            e_date[param.step + '/' + param.variant + '/' + param.event_name] = param.count;
-            e_dates[param.date] = e_date
-            
-
-        }
-
         for(var i=0; i < variant_params.length; i++){
             param = variant_params[i]
+            step_variant = param.step + '/' + param.variant;
+            
             if (v_totals[param.variant]==undefined){
                 v_totals[param.variant]=0
             }
@@ -451,20 +447,49 @@ Test.prototype = {
             }            
             
             v_date = v_dates[param.date];
-            v_date[param.step + '/' + param.variant] = param.count;
+            v_date[step_variant] = param.count;
             v_dates[param.date] = v_date
 
             if (s_totals[param.step] == undefined){
                 s_totals[param.step] = 0
             }            
             s_totals[param.step] += param.count
-            
+
+            if (sv_totals[step_variant] == undefined){
+                sv_totals[step_variant] = 0
+            }            
+            sv_totals[step_variant] += param.count
+
         }
+
+        for(var i=0; i < event_params.length; i++){
+            param = event_params[i];
+            step_variant = param.step + '/' + param.variant;
+            step_variant_event = param.step + '/' + param.variant + '/' + param.event_name;
+            if (e_totals[step_variant_event] == undefined) {
+                e_totals[step_variant_event] = 0
+            }
+            e_totals[step_variant_event] += param.count
+            e_total += param.count
+            if (e_dates[param.date] == undefined){
+                e_dates[param.date] = {}
+            }
+            e_date = e_dates[param.date];
+            e_date[step_variant_event] = param.count;
+            e_dates[param.date] = e_date
+            
+            c_totals[step_variant_event] = this.conversion_rate(param.count, sv_totals[step_variant])
+            sv_events.push(step_variant_event)
+        }
+        
         return {
             variant_total:v_total,
             variant_totals:v_totals,
             variant_dates:v_dates,
             step_totals:s_totals,
+            step_variant_totals:sv_totals,
+            step_variant_events:sv_events,
+            conversion_totals:c_totals,
             event_total:e_total,
             event_totals:e_totals,
             event_dates:e_dates,
