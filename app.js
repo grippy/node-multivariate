@@ -12,7 +12,9 @@ var sys = require("sys"),
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* helper functions */
 Date.prototype.log_format = function(){
-    return '[' + this.getFullYear().toString() + '/' + (this.getMonth() + 1).toString() + '/' + ((this.getDate() > 9) ? this.getDate().toString() : '0' + this.getDate().toString()) +
+    var month = ((this.getMonth() + 1) > 9) ? (this.getMonth() + 1).toString() : '0' + (this.getMonth() + 1).toString()
+    var date = ((this.getDate() > 9) ? this.getDate().toString() : '0' + this.getDate().toString())
+    return '[' + this.getFullYear().toString() + '/' + month + '/' + date +
             ' ' + this.getHours().toString() + ':' + this.getMinutes() + ':' + this.getSeconds() + '.' + this.getMilliseconds() + ']'
 }
 Array.prototype.contains = function(v){
@@ -174,6 +176,7 @@ var client_js = '', favicon='';
 
 /* grab the config */
 var config = require('./app/config').init()
+
 // puts("=> Starting application in " + config.env + " mode")
 
 /*////////////////////////////////////////////////////////////////////////////////*/
