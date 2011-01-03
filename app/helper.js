@@ -34,20 +34,20 @@ exports.helper = {
         var dt = new Date();
         
         // adjust date to some other timezone other then local system?
-        sys.puts('Server date:')
-        sys.puts(dt.toString())
+        // sys.puts('Server date:')
+        // sys.puts(dt.toString())
         var offset = config.app_stats_offset
         if (offset != 0) {
             // adjust via ms so we can also account for a minute offset
             var offset_ms = offset * 3600000
             dt = new Date(dt.getTime() + offset_ms)
-            sys.puts('Adjusted date:')
-            sys.puts(dt.toString())
+            // sys.puts('Adjusted date:')
+            // sys.puts(dt.toString())
         }
         // now round down to midnight...
         dt.setHours(0, 0, 0, 0)
-        sys.puts('Redis date:')
-        sys.puts(dt.toString())
+        // sys.puts('Redis date:')
+        // sys.puts(dt.toString())
         return dt.getTime()
     }
 }

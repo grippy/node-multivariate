@@ -32,11 +32,12 @@ The only submodule used is redis-node (https://github.com/bnoguchi/redis-node).
 'config/environment.js' contains three sections you can update (development, testing, and production).
 
 	exports.development = {
-	    redis_db:0,
-	    redis_host:'127.0.0.1',
-	    redis_port:6379,
-	    app_port:8000,
-	    admin_port:9000
+		redis_db:0,
+		redis_host:'127.0.0.1',
+		redis_port:6379,
+		app_port:8000,
+		app_stats_offset:0,
+		admin_port:9000
 	}
 
 Production also features an additional parameter for spawning a socket slave to serve requests from:
@@ -47,6 +48,7 @@ Production also features an additional parameter for spawning a socket slave to 
 	    redis_port:6379,
 	    app_port:8000,
 		app_slaves:2,
+		app_stats_offset:-8,
 	    admin_port:9000
 		
 	}
