@@ -1,9 +1,4 @@
-<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/json/json-min.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/element/element-min.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/datasource/datasource-min.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/swf/swf-min.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/charts/charts-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.8.2r1/build/yahoo-dom-event/yahoo-dom-event.js&2.8.2r1/build/datasource/datasource-min.js&2.8.2r1/build/json/json-min.js&2.8.2r1/build/element/element-min.js&2.8.2r1/build/swf/swf-min.js&2.8.2r1/build/charts/charts-min.js"></script> 
 
 <h1><%=test.key%></h1>
 
@@ -40,30 +35,13 @@
 		<td><%=test.steps%></td>
 	</tr>
 <%}%>
+	<tr>
+		<td><strong>json</strong></td>
+		<td>{key:'<%=test.key%>', name:'<%=test.name%>'}</td>
+	</tr>
+
 </table>
-
-<p>{key:'<%=test.key%>', name:'<%=test.name%>'}</p>
-
-<!--
-<strong>dates:</strong> 
-<%if (test.dates){%>
-	<%=test.dates.split(',').forEach(function(s){
-		print(test.format_epoch(s) + ', ')
-	})%>
-<%}%>
-<br />
-
-<strong>events:</strong> 
-<%if (test.events){%>
-	<%=test.events.split(',').forEach(function(s){
-		print(s + ', ')
-	})%>
-<%}%>
-<br />
--->
-
 <%//=this.inspect(stats)%>
-
 <h4>Variant Stats</h4>
 <table width="100%">
 	<tr>
