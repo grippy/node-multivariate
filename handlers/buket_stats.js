@@ -4,7 +4,7 @@
 function bucket_stats(req, res, params){
     // inspect(params)
     
-    var bucket_key = '/s/' + params.site + '/b/'+ params.name 
+    var bucket_key = '/s/' + params.site + '/b/'+ params.name
     // puts(bucket_key)
     
     var bucket = new model.Bucket()
@@ -35,16 +35,16 @@ function bucket_stats(req, res, params){
                 name=parts[0];
                 dt = bucket.format_epoch(parts[1])
                 key_changed = name + '/' + dt
-                
+            
                 if (!dates.contains(dt)) dates.push(dt)
                 if (!names.contains(name)) names.push(name)
-                count = parseInt(val.toString(), 10)                
+                count = parseInt(val.toString(), 10)
                 // bucket.stats[key_changed] = count
                 if (totals[name] == undefined){
                     totals[name] = 0
                 }
                 totals[name] += count
-                
+            
                 if(date_totals[dt] == undefined){
                     date_totals[dt]={}
                 }
@@ -52,7 +52,6 @@ function bucket_stats(req, res, params){
                     date_totals[dt][name] = 0
                 }
                 date_totals[dt][name] += count
-                
             })
             bucket.stats.dates = dates.sort();
             bucket.stats.names = names.sort();

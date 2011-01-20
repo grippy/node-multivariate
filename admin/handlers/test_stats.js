@@ -14,6 +14,7 @@ function test_stats(req, res, params){
                         test:test,
                         stats:JSON.parse(results),
                         test_key:test_key,
+                        test_data_key:test.key.replace('/' + test.type, '/data/' + test.type),
                         url:url
                     }
                     var body = views.test_stats.parse(env)

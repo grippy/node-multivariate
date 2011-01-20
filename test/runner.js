@@ -3,14 +3,13 @@ var sys = require('sys'),
     assert = require("assert"),
     fixture = require('../fixtures/testing'),
     http = require('http'),
-    Step = require('../app/step'),
-    helper = require('../app/helper').helper
+    Step = require('../app/step')
 
 // push the testing param on to the args...
 process.argv.push('testing')
 
 // pull out the scope, remove the cancer...
-var model, config, redis, client, testing_app_pid
+var model, config, redis, client, helper, testing_app_pid
 
 function print(s){sys.print(s)}
 function puts(s){sys.puts(s)}
@@ -391,13 +390,15 @@ function start_testing(){
                     assert.equal(stats.variant_totals.a, 71)
                     assert.equal(stats.variant_totals.b, 34)
                     assert.equal(stats.event_total, 242)
-                    assert.equal(stats.event_totals.whatevs, 164)
-                    assert.equal(stats.event_totals.foreals, 78)
+                    assert.equal(stats.event_totals['page_1/a/whatevs'], 101)
+                    assert.equal(stats.event_totals['page_2/a/whatevs'], 51)
+                    assert.equal(stats.event_totals['page_3/a/whatevs'], 12)
+                    assert.equal(stats.event_totals['page_1/b/foreals'], 11)
+                    assert.equal(stats.event_totals['page_2/b/foreals'], 14)
+                    assert.equal(stats.event_totals['page_3/b/foreals'], 53)
                     assert.equal(stats.variant_dates[date]['page_1/a'], 35)
                     assert.equal(stats.event_dates[date]['page_1/a/whatevs'], 101)
                     return true
-                
-                
                 },
                     
         // bucket test
@@ -446,7 +447,10 @@ function start_testing(){
                  assert.equal(stats.date_totals[date]['sunday'], 9)
                  return true
              },
-             /* test user agent strings... */
+        
+        // TODO:
+        /* test user agent strings... */
+        /* test data tracking for buckets and events... */
              
         // kill
         function(err, result){
@@ -505,11 +509,14 @@ testing_app_pid = child.pid;
 child.stdout.on('data', function(data) {
   if (data.toString().toLowerCase().indexOf('listening') > -1){
       
+      // this need to be the first to load config or something else may load the dev config settings...
       config = require('../app/config').init('testing')
       setTimeout(function(){
           client = http.createClient(config.app_port, 'localhost');
           redis = config.redis;
+          // delay these so we cache the correct config settings for testing.
           model = require('../models')
+          helper = require('../app/helper').helper
           start_testing()
       }, 1000)
   }

@@ -1,23 +1,38 @@
 /*
-    usage: 
+    multivar usage:
     <script type="text/javascript" src="http://localhost:8000/api/1.0/client.js"></script>
     <script type="text/javascript">
-        multivar.init('http://localhost:8000', 'site_key')
+        // 0. setup the required base_url and site properties...
+        multivar.base_url = 'http://localhost:8000';
+        multivar.site = 'domain.com';
+        
+        // to enable tracking from the client you'll need to properly initialize a module, page, or funnel test:
         // 1. module testing...
-        multivar.module('test_key')
+            multivar.module('test_key')
         
         // 2. page testing...
-        multivar.page('test_key')
-        
-        // 3. variant event tracking...
-        // the variant is returned from the module or page test call above
-        multivar.track('test_key', 'event_name')
-        
-        // 4. bucket tracking (key, value)
-        multivar.bucket('listing_page', 'claimed|unclaimed')
-        
-    </script>
+            // pass this from your controller into your view so you can initialize the response from the rest call
+            multivar.page({"name":"page_test","type":"p","variant":"a"} 
+            
+        // 3. funnel testing...
+            // pass this from your controller into your view so you can initialize the response from the rest call
+            multivar.funnel({"name":"funnel_test","type":"f","variant":"a","step":"page_1","next_step":"page_2","state":"{\"name\":\"funnel_test\",\"type\":\"f\",\"variant\":\"a\",\"step\":\"page_1\",\"next_step\":\"page_2\"}"})
 
+        // call one of these below anytime after the test is initialized (above) :
+        // 4. variant event tracking...
+            // the variant is returned from the module or page test call above; just associate a key with it.
+            multivar.track('test_key', 'event_name')
+        
+            // w/ optional data collection arg
+            multivar.track('test_key', 'event_name', {user:name,...})
+        
+        // 5. bucket tracking (key, value)
+            multivar.bucket('bucket_key', 'claimed')
+
+            // w/ optional data collection arg
+            multivar.track('bucket_key', 'claimed', {user:name,...})
+		</script>
+    </script>
 */
 
 var multivar = {
@@ -123,7 +138,6 @@ var multivar = {
             this.delete_cookie(result.name)
         }
     },
-    
     track:function(t, e){
         var test = this.tests[t]
         var track_url;
@@ -132,12 +146,29 @@ var multivar = {
         } else if (test.type == 'f') {
             track_url = this.test_funnel_variant_event_key_url(test.type, t, test.step, test.variant, e)
         }
+        var data;
+        if(arguments[2]!=undefined){data = this.data_params(arguments[2])}
         if (track_url) {
+            if(data) {track_url += '?data=' + data};
             this.script(track_url)
         }
     },
     bucket:function(k, v){
-        this.script(this.bucket_key_url(k, v))
+        var data;
+        if(arguments[2]!=undefined){
+            data = this.data_params(arguments[2])
+        }
+        var url = this.bucket_key_url(k, v)
+        if(data) {url += '?data=' + data};
+        this.script(url)
+    },
+    data_params:function(o){
+        var parts = []
+        for(var p in o){
+            parts.push(p + '=' + o[p])
+        }
+        if (parts.length) {return escape(parts.join('&'))}
+        return null
     },
     end:function(){}
     

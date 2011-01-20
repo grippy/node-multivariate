@@ -22,7 +22,7 @@ The only submodule used is redis-node (https://github.com/bnoguchi/redis-node).
 
 # Testing Types
 
-	- Bucket: A bucket test is used for tracking well, buckets. You could use it to track pageviews or how many times an action was completed, etc. You can track these on either the client or the server.
+	- Bucket: Useful for tracking calls to a key/val combo. You can use it to track pageviews or how many times an action was completed, etc. You can track these on either the client or the server.
 	- Module: A module test swtiches out a portion of a webpage. It's purely client-side. A module test also allows for tracking events and associating them with the corresponding variant.
 	- Page: A page test is used to render one version of a webpage or another. Also allows for tracking events from the client. See below for example. 
 	- Funnel: A funnel test is nothing more then a series of page tests. The only difference is that the variant is sticky. So, if a user sees variant 'b' for step 1, then they'll see variant 'b' throughout the remaining steps. Also allows for tracking events from the client. 
@@ -53,7 +53,7 @@ Production also features an additional parameter for spawning a socket slave to 
 		
 	}
 
-The number of slaves can be equal to: # processor cores * # processors - 1 (main application listening on the port #)
+The number of slaves should be equal to: # processor cores * # processors - 1 (main application listening on the port #8000)
 
 # Load the sample data
 
@@ -133,13 +133,62 @@ With the default, admin config parameters, you can view it here:
 
 # Client Javascript
 
-The application requires using the client-side javascript api if you care about module tests and/or event/bucket tracking. 
-Keep in mind, that you'll need to place the script tag in the page head tag for the cookie tracking to work properly.
+The application requires using the client-side javascript api if you need to conduct module tests and/or event/bucket tracking.
+Keep in mind, that you'll need to place the script tag in the page head tag for the cookie tracking on funnel tests to work properly.
+
+# Client Javascript API
+
+See static/api/1.0/client.js for documentation.
+
+# Tracking Data Points
+
+Event and bucket tracking also allow tracking json objects, too. What you track is entirely up to you.
+You can then export that list of data points as a csv/json for further analysis (see admin tool).
+
+Example:
+
+		<script type="text/javascript" src="http://localhost:8000/api/1.0/client.js"></script>
+		<script type="text/javascript">
+			multivar.base_url = 'http://localhost:8000';
+			multivar.site = 'domain.com';
+			multivar.module('module_test')
+
+			// bucket test...
+			multivar.bucket('cart', 'receipt', { invoice:1, 
+												 amount:42000, 
+												 item_1_num:'sku34324',
+												 item_1_price:42000,
+												...})
+		</script>
+
+
+A few words about changing the schema of a data point:
+ 
+The datapoint should be a flat json object where each property value is either a string or integer.
+The reporting feature produces a column layout from the very first data point stored for a key and uses that to produce the csv/json output. 
+If you want your report to be accurate then remember to clear the data point cache if you change it's schema.
+
+# Redis Key Structures
+
+You can tweak tests directly in redis. Here's a quick chart to how things are stored:
+
+Bucket keys:
+
+/s/:site/buckets - stores the master list of bucket keys associated with this site.
+/s/:site/b/:name/:value/:day_epoch - stores the counter for how many times this bucket was accessed per day
+
+Module, page, and funnel test keys:
+
+/s/:site/:test_type/t/:test_name - stores the test meta data as a hash.
+
+/s/:site/:test_type/t/:test_name/:day_epoch - stores the counter for how many times the test metadata was requested on this day.
+
+/s/:site/data/:test_type/t/:test_name - stores the datapoints collected for a test key
+
 
 # Server-Side integration
 
-In order to integrate page or funnel testing, you'll need to make calls to this application from your application controller actions/handlers, etc.
-Then you can render the correct page based on the variant value returned from this application.
+The application is basically a REST api. Make calls to it from your controller actions, handlers, etc. See scripts/multivar.py 
 
 # Bot Filtering
 
@@ -147,9 +196,9 @@ Both page and funnel testing allow for the removal of bots from the test flow(s)
 See 'app/crawlers.js' for the list of basic user agent regex expressions.
 To filter by user agent, just pass it along with the page or funnel test request.
 
-# Example
+# Integration Example
 
-Let's run through a quick example of how to configure a page test (no admin exists for this now, so let's do it manually).
+Let's run through a quick example on how to configure a page test (no admin exists for this now, so let's do it manually).
 
 We want to create a new test identified with the following structure:
 
@@ -223,8 +272,9 @@ Markup for /somepage - variant a:
 
 In the above example, we're serving the multivariate app on localhost:8000. 
 You'll probably want to host this on a different domain or sub-domain of your application and proxy the requests.
-In addition, also point your webserver to the 'static/' directory so it handles serving the client api.
+In addition, also point your webserver to the 'static/' directory so it handles serving the client api (if you plan on using it).
 
 # Performance
+
 Load testing on localhost varies between 1200-1400rps on average (when tested on a MacBook Pro Core Duo w/ 2GB/667MHz/SDRAM).
 Let me know what you discover.

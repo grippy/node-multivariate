@@ -114,7 +114,7 @@ function handler(req, res){
                         if (helper.has_variant(path) && helper.has_event(path)) {
                             // we have a key route here...
                             // check to see if this test is a var or event
-                            track(req, res, path)
+                            track(req, res, path, params)
                 
                         } else {
                             // we have a route here...
@@ -124,7 +124,7 @@ function handler(req, res){
                     } else if (route.name == 'site_page_test'){
                         if (helper.has_variant(path) && helper.has_event(path)) {
                             // check to see if this test is a var or event
-                            track(req, res, path)
+                            track(req, res, path, params)
                         } else {
                             page_test(req, res, path, params)
                         }
@@ -132,7 +132,7 @@ function handler(req, res){
                     } else if (route.name == 'site_funnel_test'){
                         if (helper.has_variant(path) && helper.has_event(path)) {
                             // check to see if this test is a var or event
-                            track(req, res, path)
+                            track(req, res, path, params)
                         } else {
                             // we have a test route here...
                             funnel_test(req, res, path, params)
@@ -145,6 +145,8 @@ function handler(req, res){
                         test_stats(req, res, params)
                     } else if (route.name == 'bucket_stats'){
                         bucket_stats(req, res, params)
+                    } else if (route.name == 'data_stats'){
+                        data_stats(req, res, params)
                     } else {
                         res.body('undefined route')
                         end(req, res)
@@ -190,6 +192,7 @@ routes.routes = [
     new routes.Route('create_test', '/create/test'),
     new routes.Route('test_stats', '/stats/test/:test_key*'),
     new routes.Route('bucket_stats', '/stats/bucket/s/:site/b/:name'),
+    new routes.Route('data_stats', '/stats/data/:data_key*'),
     new routes.Route('site_bucket', '/s/:site/b/:name/:value'),
     new routes.Route('site_page_test', '/s/:site/p/t/:name'),
     new routes.Route('site_module_test', '/s/:site/m/t/:name'),

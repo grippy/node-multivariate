@@ -49,5 +49,11 @@ exports.helper = {
         // sys.puts('Redis date:')
         // sys.puts(dt.toString())
         return dt.getTime()
-    }
+    },
+    format_epoch:function(e){
+        var d = new Date(parseInt(e, 10));
+        var month = ((d.getMonth() + 1) > 9) ? (d.getMonth() + 1).toString() : '0' + (d.getMonth() + 1).toString()
+        var date = ((d.getDate() > 9) ? d.getDate().toString() : '0' + d.getDate().toString())        
+        return d.getFullYear().toString() + '-' + month + '-' + date
+    },    
 }

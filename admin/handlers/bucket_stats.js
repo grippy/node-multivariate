@@ -8,6 +8,7 @@ function bucket_stats(req, res, params){
         var env = {
             stats:JSON.parse(results),
             bucket_key:bucket_key,
+            bucket_data_key:bucket_key.replace('/b', '/data/b'),
             buckets_key:buckets_key,
             url:url
         }

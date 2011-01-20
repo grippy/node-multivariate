@@ -145,6 +145,8 @@ function handler(req, res){
                         bucket_stats(req, res, params)
                     } else if (route.name == 'buckets'){
                         buckets(req, res, params)
+                    } else if (route.name == 'data'){
+                        data(req, res, params)
                     } else {
                         res.body('undefined route')
                         end(req, res)
@@ -173,7 +175,12 @@ routes.routes = [
     // new routes.Route('create_test', '/admin/create/test', 'text/html'),
     new routes.Route('test_stats', '/admin/stats/test/:test_key*', 'text/html'), // page, module, or funnel stats by key
     new routes.Route('bucket_stats', '/admin/stats/bucket/:bucket_key*', 'text/html'),
-    new routes.Route('buckets', '/admin/buckets/:buckets_key*', 'text/html')
+    new routes.Route('buckets', '/admin/buckets/:buckets_key*', 'text/html'),
+    new routes.Route('data', '/admin/stats/data/:data_key*', 'text/html'),
+    
+    // new routes.Route('data_json', '/admin/data/:data_key/json', 'application/json'),
+    // new routes.Route('data_csv', '/admin/data/:data_key/csv', 'application/csv')
+    
 ]
 routes.finalize()
 

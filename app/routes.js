@@ -97,9 +97,9 @@ exports.finalize = function(){
 
 exports.match = function(path){
      // return a route from the specified path..
-     var route, 
-         params,
-         path = path.replace('.json', '').replace('.js','');
+     var route, params;
+         // path = path.replace('.json', '').replace('.js','');
+
      if (path_cache[path] != undefined){
          // sys.puts('=> Return from path_cache')
          route = path_cache[path];

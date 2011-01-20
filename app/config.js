@@ -36,7 +36,6 @@ function parse_argv(){
 exports.init = function(){
     // override default if one was passed to config init...
     if (arguments.length) env = arguments[0]
-    
     if (global.config == undefined) {
         parse_env()
         parse_argv()
