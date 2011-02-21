@@ -26,7 +26,7 @@ function create_test(req, res){
             
             var test = new model.Test().create(props);
             var dirty = test.dirty_props();
-            // sys.puts(sys.inspect(dirty))
+            // util.puts(util.inspect(dirty))
             redis.hmset(dirty[0], dirty[1], this)
         },
         function load(err, reply){
@@ -36,7 +36,7 @@ function create_test(req, res){
             var test = new Test().load(reply)
             res.body('/*\n')
             res.body('test:\n')
-            res.body(sys.inspect(test))
+            res.body(util.inspect(test))
             res.body('*/\n')
             end(req, res)
         }

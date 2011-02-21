@@ -1,8 +1,9 @@
-var sys = require('sys'), 
-    Step = require('../app/step'),
+var util = require('util'),
+	Step = require('../app/step'),
     Model = require('../app/model').Model,
     Extend = require('../app/model').Extend,
-    config = require('../app/config').init();
+    config = require('../app/config').init(); 
+
 
 var redis = config.redis
 
@@ -173,22 +174,22 @@ Test.prototype = {
             throw new Error(errors.join('\n'))
         }
         // set empty values...        
-        props.dates=''
-        props.events=''
+        props.dates=' '
+        props.events=' '
         // take the loaded values and create key:
         props.key = '/s/' + props.site + '/' + props.type + '/t/' + props.name;        
-        // sys.puts(sys.inspect(props))
+        // util.puts(util.inspect(props))
 
         // pass to create, load, and mark dirty...
         this.create(props)
         return this
     },
 
-    save:function(cb){
+    save:function(){
         var callback = (arguments.length) ? arguments[0] : function(err, success){};
         var dirty = this.dirty_props();
         if (dirty[0]){
-            var self = this;
+            // var self = this;
             redis.hmset(dirty[0], dirty[1], callback)
         } else {
             // nothing dirty...
@@ -215,7 +216,7 @@ Test.prototype = {
                     keys = keys.sort()
                     keys.forEach(function(k){
                         var key = k.toString()
-                        sys.puts(key)
+                        util.puts(key)
                         redis.del(key, group())
                     })
                     
@@ -226,9 +227,9 @@ Test.prototype = {
             function(err, success){
                 if(err) throw err;
                 if(success){
-                    sys.puts('Success!')
+                    util.puts('Success!')
                 } else {
-                    sys.puts('Nothing to delete')
+                    util.puts('Nothing to delete')
                 }
                 return null
             },
@@ -333,16 +334,16 @@ Test.prototype = {
             }
         }
         
-        // sys.puts('v_totals: ' + sys.inspect(v_totals))
-        // sys.puts('v_dates: ' + sys.inspect(v_dates))
+        // util.puts('v_totals: ' + util.inspect(v_totals))
+        // util.puts('v_dates: ' + util.inspect(v_dates))
         // 
-        // sys.puts('v_total: ' + v_total)
-        // sys.puts('---')
-        // sys.puts('e_totals: ' + sys.inspect(e_totals))
-        // sys.puts('e_dates: ' + sys.inspect(e_dates))
-        // sys.puts('e_total: ' + e_total)
-        // sys.puts('---')
-        // sys.puts(sys.inspect(date_formats))
+        // util.puts('v_total: ' + v_total)
+        // util.puts('---')
+        // util.puts('e_totals: ' + util.inspect(e_totals))
+        // util.puts('e_dates: ' + util.inspect(e_dates))
+        // util.puts('e_total: ' + e_total)
+        // util.puts('---')
+        // util.puts(util.inspect(date_formats))
         
         
         
@@ -403,7 +404,7 @@ Test.prototype = {
             key=this.stats.keys[i]
             params = {}
             if (event_pattern.test(key)){
-                // sys.puts('event')
+                // util.puts('event')
                 parts = event_pattern.exec(key)
                 params = {
                     site:parts[1],
@@ -414,12 +415,12 @@ Test.prototype = {
                     date:this.format_epoch(parseInt(parts[6], 10)),
                     count:this.stats[key]
                 }
-                // sys.puts(sys.inspect(params))
+                // util.puts(util.inspect(params))
                 event_params.push(params)
             } else {
                 if (variant_pattern.test(this.stats.keys[i])){
-                    // sys.puts('variant')
-                    // sys.puts(sys.inspect(variant_pattern.exec(this.stats.keys[i])))
+                    // util.puts('variant')
+                    // util.puts(util.inspect(variant_pattern.exec(this.stats.keys[i])))
                     parts = variant_pattern.exec(key)
                     params = {
                         site:parts[1],
@@ -429,7 +430,7 @@ Test.prototype = {
                         date:this.format_epoch(parseInt(parts[5], 10)),
                         count:this.stats[key]
                     }
-                    // sys.puts(sys.inspect(params))
+                    // util.puts(util.inspect(params))
                     variant_params.push(params)
                 }
             }

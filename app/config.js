@@ -1,9 +1,9 @@
-var sys = require('sys'), 
-    redis = require('../app/redis-node'),
+var util = require('util'),
+	redis = require('../app/redis-node'),
     environment = require('../config/environment')
 
-function puts(s){sys.puts(s)}
-function inspect(o){puts(sys.inspect(o))}
+function puts(s){util.puts(s)}
+function inspect(o){puts(util.inspect(o))}
 
 var env = 'development',
     app_cmd = ''; // start (default), stop, restart / only in production mode

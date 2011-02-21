@@ -59,7 +59,7 @@ function test_stats(req, res, params){
             // if (config.env =='development'){
             //     res.body('/*\n')
             //     res.body('test sums:\n')
-            //     res.body(sys.inspect(sums, true, 3))
+            //     res.body(util.inspect(sums, true, 3))
             //     res.body('\n*/\n')
             // }
             res.body(JSON.stringify(sums))

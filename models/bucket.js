@@ -1,4 +1,4 @@
-var sys = require('sys')
+var util = require('util');
 
 /*
     Shallow class for mostly displaying bucket stats...

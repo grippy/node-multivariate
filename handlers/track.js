@@ -1,8 +1,7 @@
 function track(req, res, path, params){
     // return response
     end(req, res);
-
-    inspect(params)
+    // inspect(params)
 
     var site = params.site
     var epoch = helper.epoch();

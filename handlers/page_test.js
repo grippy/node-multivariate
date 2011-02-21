@@ -3,7 +3,7 @@
 //
 
 function page_test(req, res, path, params){
-    // puts(path)
+    puts(path)
     var user_agent = (params.user_agent!=undefined) ? unescape(params.user_agent) : '';
     if (!crawler(user_agent)) {
         var test_key = path

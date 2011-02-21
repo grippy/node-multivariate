@@ -1,4 +1,4 @@
-var sys = require('sys')
+var util = require('util');
 
 /* route class */
 function Route(name, path){
@@ -101,7 +101,7 @@ exports.match = function(path){
          // path = path.replace('.json', '').replace('.js','');
 
      if (path_cache[path] != undefined){
-         // sys.puts('=> Return from path_cache')
+         // util.puts('=> Return from path_cache')
          route = path_cache[path];
      } else {
          for (var i=0; i < this.routes.length; i++){

@@ -1,5 +1,5 @@
-var sys = require("sys"),
-    http = require('http'),
+var util = require('util'),
+	http = require('http'),
     fs = require('fs'),
     url = require('url'),
     qs = require("querystring"),
@@ -27,15 +27,15 @@ Array.prototype.contains = function(v){
     }
     return false;
 }
-function puts(s){sys.puts(s)}
-function inspect(o){puts(sys.inspect(o))}
+function puts(s){util.puts(s)}
+function inspect(o){puts(util.inspect(o))}
 function undef(v){return v === undefined}
 function not_undef(v){return !undef(v)}
 function watch_files(){
     puts("=> Watching files") 
 	var watch = require('../app/autoexit').watch;
-	watch(__dirname,".js", function(){sys.puts('=> File changed. Restarting...')});
-	watch(__dirname,".html", function(){sys.puts('=> File changed. Restarting...')});
+	watch(__dirname,".js", function(){util.puts('=> File changed. Restarting...')});
+	watch(__dirname,".html", function(){util.puts('=> File changed. Restarting...')});
 }
 
 // http client
@@ -200,4 +200,4 @@ var http_server = http.createServer(function(req, res){
 })
 http_server.port = config.admin_port
 http_server.listen(config.admin_port);
-sys.puts('=> Server listening on http://127.0.0.1:'+ http_server.port +' (pid:' + process.pid +')')
+util.puts('=> Server listening on http://127.0.0.1:'+ http_server.port +' (pid:' + process.pid +')')

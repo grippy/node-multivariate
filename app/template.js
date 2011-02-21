@@ -3,7 +3,7 @@
 // Modified for node.JS by Tim Caswell <tim@creationix.com>
 // Rewritten by Andreas Kalsch to preserve newlines and accept single quotes
 // Modified by grippy to include other juicey bits
-var sys = require('sys');
+var util = require('util'); 
 
 function Template(name, format, str){
 	this.init(name, format, str)
@@ -22,7 +22,7 @@ Template.prototype = {
 		this.generate();
 	},
 	inspect:function(o){
-        var s = sys.inspect(o, false, null)
+        var s = util.inspect(o, false, null)
         return s.replace(/\n/g,'<br />')
 	},
 	to_json:function(o){

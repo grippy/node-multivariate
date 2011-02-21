@@ -1,14 +1,14 @@
-var sys = require('sys'),
-    config = require('../app/config').init(),
+var util = require('util'),
+	config = require('../app/config').init(),
     model = require('../models');
 
 var args = process.argv.slice(2, process.argv.length)
 var fixture = require('../fixtures/' + config.env);
 var redis = config.redis
 
-function print(s){sys.print(s)}
-function puts(s){sys.puts(s)}
-function inspect(o){puts(sys.inspect(o))}
+function print(s){util.print(s)}
+function puts(s){util.puts(s)}
+function inspect(o){puts(util.inspect(o))}
 
 // var keys=[]
 // args.forEach(function(s){

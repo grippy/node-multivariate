@@ -1,5 +1,5 @@
-var sys = require('sys'),
-    buffer = require('buffer');
+var util = require('util'),
+	buffer = require('buffer');
 
 var Model = {
     _create:false,
@@ -53,10 +53,10 @@ var Model = {
             props['updated_at'] = time
             dirty.push(props)
             
-            // sys.puts(sys.inspect(this))
-            // sys.puts(sys.inspect(props))
+            // util.puts(util.inspect(this))
+            // util.puts(util.inspect(props))
             
-            return dirty
+            return JSON.parse(JSON.stringify(dirty))
         }
         return [null, null];
     },

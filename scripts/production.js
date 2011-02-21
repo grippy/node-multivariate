@@ -1,5 +1,5 @@
-var sys = require('sys'),
-    http = require('http'),
+var util = require('util'),
+	http = require('http'),
     net = require('net'),
     fs = require('fs');
     app = require('../app');
@@ -22,12 +22,12 @@ function stop(){
     files.forEach(function(fd, i){
         if (fd.indexOf('.pid') > -1){
             pid = fd.split('server.')[1].split('.pid')[0]
-            sys.puts('=> Killing process: ' +  pid)
+            util.puts('=> Killing process: ' +  pid)
             exec('kill -9 ' + pid, function (err, stdout, stderr) {
-                if (err) sys.puts(sys.inspect(err))
+                if (err) util.puts(util.inspect(err))
             })
             exec('rm ./log/' + fd, function(err, stdout, stderr){
-                if (err) sys.puts(sys.inspect(err))
+                if (err) util.puts(util.inspect(err))
             })
         }
     })
@@ -44,18 +44,18 @@ function start(){
     http_server.port = port;
 
     http_server.listen(port, function(){
-        sys.puts('=> Server listening on http://127.0.0.1:'+ port +' (pid:' + process.pid +')')
+        util.puts('=> Server listening on http://127.0.0.1:'+ port +' (pid:' + process.pid +')')
         log_pid(process.pid)
     
         if (slaves > 0) {
             s = net.Server(function(c) { 
-                // sys.puts('=> Creating socket')
+                // util.puts('=> Creating socket')
                 c.write('blah', 'ascii', http_server.fd);
                 c.end();
             }); 
             var socket_fd = '/tmp/node_multivariate_server.sock';
             s.listen(socket_fd, function(){
-                sys.puts('=> Listening on socket: ' + socket_fd)
+                util.puts('=> Listening on socket: ' + socket_fd)
                 for (var i = 0; i < slaves; i++){
                     var child_process = require('child_process');
                     var child = child_process.spawn('node', ['./app/child.js', config.env])
@@ -65,14 +65,14 @@ function start(){
                     log_pid(child.pid)
                 
                     child.stdout.on('data', function(data) {
-                      sys.print(data);
+                      util.print(data);
                     });
                     child.stderr.on('data', function(data) {
-                      sys.print(data);
+                      util.print(data);
                     });
                     child.on('exit', function (code) {
-                      // sys.print('child process exited with code ' + code);
-                      sys.puts('Exiting application...') 
+                      // util.print('child process exited with code ' + code);
+                      util.puts('Exiting application...') 
                     });
                 }
             });

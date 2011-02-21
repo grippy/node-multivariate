@@ -1,9 +1,10 @@
-var sys = require('sys'),
+var util = require('util'),
     child_process = require('child_process'),
     assert = require("assert"),
-    fixture = require('../fixtures/testing'),
     http = require('http'),
+    fixture = require('../fixtures/testing'),
     Step = require('../app/step')
+
 
 // push the testing param on to the args...
 process.argv.push('testing')
@@ -11,9 +12,9 @@ process.argv.push('testing')
 // pull out the scope, remove the cancer...
 var model, config, redis, client, helper, testing_app_pid
 
-function print(s){sys.print(s)}
-function puts(s){sys.puts(s)}
-function inspect(o){puts(sys.inspect(o, false, null))}
+function print(s){util.print(s)}
+function puts(s){util.puts(s)}
+function inspect(o){puts(util.inspect(o, false, null))}
 function error(e){
     //puts(e.name + ': ' + e.message)
     e.stack.split('\n').forEach(function(s){
@@ -29,7 +30,6 @@ function start_testing(){
     var module_test = new model.Test().base(fixture.tests.module_test)
     var page_test = new model.Test().base(fixture.tests.page_test)
     var funnel_test = new model.Test().base(fixture.tests.funnel_test)
-
     
     Step(
         
@@ -526,7 +526,7 @@ child.stderr.on('data', function(data) {
   print(data);
 });
 child.on('exit', function (code) {
-  // sys.print('child process exited with code ' + code);
+  // util.print('child process exited with code ' + code);
   puts('Exiting application...') 
 });
 

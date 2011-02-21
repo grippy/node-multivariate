@@ -60,7 +60,7 @@ function bucket_stats(req, res, params){
             
             delete bucket.stats.keys
             
-            // res.body(sys.inspect(bucket.stats))
+            // res.body(util.inspect(bucket.stats))
             res.body(JSON.stringify(bucket.stats))
             end(req, res)
         }

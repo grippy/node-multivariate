@@ -1,4 +1,4 @@
-var sys = require('sys')
+var util = require('util');
 
 /*
 http://www.useragents.org/database-view.asp?cat=0&id=4

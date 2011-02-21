@@ -6,18 +6,18 @@ function end(req, res){
     var diff = end.getTime() - req.date.getTime();
     
     var mem = process.memoryUsage()
-    sys.print(req.date.log_format())
+    util.print(req.date.log_format())
     if (req.headers['x-real-ip'] != undefined){
-        sys.print('[' + req.headers['x-real-ip'] + ']')
+        util.print('[' + req.headers['x-real-ip'] + ']')
     } else {
-        sys.print('[' + req.socket.remoteAddress + ']')
+        util.print('[' + req.socket.remoteAddress + ']')
     }
-    sys.print('['+ req.socket.server.port.toString())
-    sys.print('/' + process.pid)
-    sys.print('/' + bit_to_mb(mem.rss) + 'MB]')
-    sys.print('[' + req.method + ']')
-    sys.print(' ' + (diff / 1000).toString())
-    sys.puts(' - ' + req.url)
+    util.print('['+ req.socket.server.port.toString())
+    util.print('/' + process.pid)
+    util.print('/' + bit_to_mb(mem.rss) + 'MB]')
+    util.print('[' + req.method + ']')
+    util.print(' ' + (diff / 1000).toString())
+    util.puts(' - ' + req.url)
     
     var body = res._body.join('')
     var length = body.length

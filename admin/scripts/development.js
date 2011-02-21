@@ -1,5 +1,6 @@
-var sys = require('sys'),
-    child_process = require('child_process');
+var util = require('util'),
+	child_process = require('child_process');
+
 
 // grab the args and pass them along to the app
 var args = process.argv.slice(2, process.argv.length)
@@ -14,17 +15,17 @@ var args = process.argv.slice(2, process.argv.length)
 function spawn(){
     var child = child_process.spawn('node', ['admin/app.js'].concat(args))
     child.stdout.on('data', function(data) {
-      sys.print(data);
+      util.print(data);
     });
     child.stderr.on('data', function(data) {
-      sys.print(data);
+      util.print(data);
     });
     child.on('exit', function (code) {
-      // sys.print('child process exited with code ' + code);
-      sys.puts('') 
+      // util.print('child process exited with code ' + code);
+      util.puts('') 
       spawn()
     }); 
-    // sys.puts('Child ' + child.pid)
+    // util.puts('Child ' + child.pid)
 }
 
 // start this sucker up! 

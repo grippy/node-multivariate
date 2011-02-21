@@ -1,20 +1,20 @@
-var sys = require('sys'),
-    child_process = require('child_process');
+var util = require('util'),
+	child_process = require('child_process');
 
-// sys.puts('=> Motorhead pid: ' + process.pid)
+// util.puts('=> Motorhead pid: ' + process.pid)
 // var args = process.argv.slice(2, process.argv.length)
 
 function spawn(proc, args){
     var child = child_process.spawn(proc, args)
     child.stdout.on('data', function(data) {
-      sys.print(data);
+      util.print(data);
     });
     child.stderr.on('data', function(data) {
-      sys.print(data);
+      util.print(data);
     });
     child.on('exit', function (code) {
-      // sys.print('child process exited with code ' + code);
-      sys.puts('Exiting application...') 
+      // util.print('child process exited with code ' + code);
+      util.puts('Exiting application...') 
     }); 
 }
 

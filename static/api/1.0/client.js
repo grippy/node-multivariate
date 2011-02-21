@@ -9,7 +9,13 @@
         // to enable tracking from the client you'll need to properly initialize a module, page, or funnel test:
         // 1. module testing...
             multivar.module('test_key')
-        
+            
+            // all module tests call multivar.module_cb via jsonp after the test data is loaded...
+            // you can also call an optional callback parameter after multivar.module_cb is fired
+            multivar.module('test_key', function(){
+                alert('awesome! I can put my hooks here.')
+            })
+            
         // 2. page testing...
             // pass this from your controller into your view so you can initialize the response from the rest call
             multivar.page({"name":"page_test","type":"p","variant":"a"} 
@@ -39,6 +45,7 @@ var multivar = {
     base_url:null,
     site:null,
     tests:{},
+    callbacks:{},
     cookies:{},
     $:function(id){
         return document.getElementById(id)
@@ -104,13 +111,15 @@ var multivar = {
     test_funnel_variant_event_key_url:function(t,k,s,v,e){
         return this.test_key_url(t,k) + '/step/' + this.filter(s) + '/v/' + this.filter(v) + '/e/' + this.filter(e);
     },
-
     bucket_key_url:function(k, v){
         return this.base_url + '/s/' + this.site + '/b/' + this.filter(k) + '/' + this.filter(v);
     },
     module:function(key){
         // initial this test...
-        // this.tests[key]=null;
+        // do we have a callback to perform after the module is loaded?
+        if(arguments[1]!=undefined){
+            this.callbacks[key] = arguments[1]
+        }
         var test_key_url = this.test_key_url('m', key)
         this.script(test_key_url + '?jsonp=multivar.module_cb' )
     },
@@ -119,9 +128,10 @@ var multivar = {
         var variant_container = result.name + '_' + result.variant;
         // alert(variant_container)
         var el = this.$(variant_container)
-        if (el){
-            el.style.display = '';
-        }
+        if (el){el.style.display = ''}
+        
+        var cb = this.callbacks[result.name]
+        if (cb != undefined){cb()}
     },
     page:function(result){
         // initial this test...
