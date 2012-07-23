@@ -30,7 +30,7 @@ function inspect(o){puts(util.inspect(o))}
 function undef(v){return v === undefined}
 function not_undef(v){return !undef(v)}
 function watch_files(){
-    puts("=> Watching files") 
+    puts("=> Watching files")
 	var watch = require('./app/autoexit').watch;
 	watch(__dirname,".js", function(){util.puts('=> File changed. Restarting...')});
 }
@@ -42,8 +42,8 @@ var bucket_members_cache = {}
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* load handlers */
 
-/* 
-    Don't use the common js pattern for loading the handlers... 
+/*
+    Don't use the common js pattern for loading the handlers...
     Treat the handlers more like virtual includes.
     Keeps them clean and dry this way...
 */
@@ -61,7 +61,7 @@ for(var i=0; i < dir.length; i++){
 function handler(req, res){
         // save the date...
         req.date = new Date();
-        
+
         // create a few response methods...
         res._body = [];
         res.header = {'Cache-Control':'no-store'};
@@ -71,11 +71,11 @@ function handler(req, res){
         }
         req.addListener('data', function(chunk){})
         req.addListener('end', function(){
-            try{        
+            try{
                 var uri = url.parse(req.url),
                     path = uri.pathname,
                     params = (uri.query != undefined) ? qs.parse(uri.query) : {};
-                    
+
                 // heartbeat for production...
                 if (path == '/heartbeat'){
                     res.header['Content-Type'] = 'text/html'
@@ -98,7 +98,7 @@ function handler(req, res){
                 if (route) {
                     var route_params = route[1];
                     route = route[0];
-        
+
                     // merge the route params w/ the query params
                     for(var prop in route_params) {
                     	var val = route_params[prop];
@@ -106,21 +106,21 @@ function handler(req, res){
                             params[prop] = val
                     	}
                     }
-                    
+
                     // set the content-header...
                     res.header['Content-Type'] = route.content_type
-        
+
                     if (route.name == 'site_module_test'){
                         if (helper.has_variant(path) && helper.has_event(path)) {
                             // we have a key route here...
                             // check to see if this test is a var or event
                             track(req, res, path, params)
-                
+
                         } else {
                             // we have a route here...
                             module_test(req, res, path, params)
                         }
-        
+
                     } else if (route.name == 'site_page_test'){
                         if (helper.has_variant(path) && helper.has_event(path)) {
                             // check to see if this test is a var or event
@@ -151,7 +151,7 @@ function handler(req, res){
                         res.body('undefined route')
                         end(req, res)
                     }
-                } 
+                }
             } catch(e){
                 res.status_code = 500
                 end(req, res)
@@ -202,7 +202,7 @@ routes.finalize()
 
 /*////////////////////////////////////////////////////////////////////////////////*/
 /* start the server only if development mode */
-/* development mode uses a file watcher to restart on changes this makes it way easier if we can start an app here */ 
+/* development mode uses a file watcher to restart on changes this makes it way easier if we can start an app here */
 if (config.env == 'development') {
 
     /* restart on file change... */
@@ -214,8 +214,13 @@ if (config.env == 'development' || config.env == 'testing'){
     var http_server = http.createServer(function(req, res){
         handler(req, res)
     })
-    
+
     http_server.port = config.app_port
     http_server.listen(config.app_port);
     puts('=> Server listening on http://127.0.0.1:'+ http_server.port +' (pid:' + process.pid +')')
 }
+
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});
+
